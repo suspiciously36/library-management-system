@@ -17,11 +17,10 @@ export class CustomerService {
   ): Promise<Customer> {
     const customer: Customer = new Customer();
     customer.name = createCustomerDto.name;
-    customer.age = createCustomerDto.age;
-    customer.username = createCustomerDto.username;
+    customer.phone = createCustomerDto.phone;
+    customer.address = createCustomerDto.address;
     customer.email = createCustomerDto.email;
     customer.gender = createCustomerDto.gender;
-    customer.password = createCustomerDto.password;
 
     return this.customerRepository
       .upsert([customer], ['email'])
@@ -45,10 +44,9 @@ export class CustomerService {
   ): Promise<Customer> {
     const customer: Customer = new Customer();
     customer.name = updateCustomerDto.name;
-    customer.username = updateCustomerDto.username;
-    customer.age = updateCustomerDto.age;
+    customer.phone = updateCustomerDto.phone;
+    customer.address = updateCustomerDto.address;
     customer.email = updateCustomerDto.email;
-    customer.password = updateCustomerDto.password;
     customer.id = id;
     return this.customerRepository.save(customer);
   }

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Transaction } from '../../transactions/entities/transaction.entity';
 
 @Entity()
 export class Customer {
@@ -9,17 +10,20 @@ export class Customer {
   name: string;
 
   @Column({ type: 'varchar', length: 15 })
-  username: string;
+  phone: string;
 
   @Column({ type: 'varchar', unique: true, length: 40 })
   email: string;
 
-  @Column({ type: 'int' })
-  age: number;
-
   @Column({ type: 'varchar' })
-  password: string;
+  address: string;
 
   @Column({ type: 'enum', enum: ['m', 'f', 'u'] })
   gender: string;
+
+  @OneToMany(
+    () => Transaction,
+    (transaction: Transaction) => transaction.customer,
+  )
+  transactions: Transaction[];
 }

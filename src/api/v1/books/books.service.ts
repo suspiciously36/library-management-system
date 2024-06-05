@@ -45,4 +45,12 @@ export class BooksService {
   remove(id: number) {
     return this.bookRepository.delete({ id });
   }
+
+  async decreaseCopies(book_id: number): Promise<void> {
+    const book: Book = await this.findOne(book_id);
+    if (book) {
+      book.copies_available -= 1;
+      this.bookRepository.save(book);
+    }
+  }
 }

@@ -22,14 +22,17 @@ export class AuthorsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} author`;
+    return this.authorRepository.findOneBy({ id });
   }
 
-  update(id: number, updateAuthorDto: UpdateAuthorDto) {
-    return `This action updates a #${id} author`;
+  update(id: number, updateAuthorDto: UpdateAuthorDto): Promise<Author> {
+    const author: Author = new Author();
+    author.name = updateAuthorDto.name;
+    author.id = id;
+    return this.authorRepository.save(author);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} author`;
+    return this.authorRepository.delete({ id });
   }
 }

@@ -1,5 +1,14 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Author } from '../../authors/entities/author.entity';
+import { Category } from '../../categories/entities/category.entity';
+import { Transaction } from '../../transactions/entities/transaction.entity';
 
 @Entity()
 export class Book {
@@ -24,6 +33,18 @@ export class Book {
   @Column({ type: 'int' })
   publication_year: number;
 
-  @ManyToOne(() => Author, (author: Author) => author.books)
+  @ManyToOne(() => Author, (author: Author) => author.books, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'author_id' })
   author: Author;
+
+  @ManyToOne(() => Category, (category: Category) => category.books, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
+
+  @OneToMany(() => Transaction, (transaction: Transaction) => transaction.book)
+  transactions: Transaction[];
 }
