@@ -1,6 +1,6 @@
 import { IsString, IsInt, IsNotEmpty } from 'class-validator';
 import { PrimaryGeneratedColumn } from 'typeorm';
-
+import { Transform } from 'class-transformer';
 export class CreateTransactionDto {
   @PrimaryGeneratedColumn()
   id: number;
@@ -13,15 +13,16 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   customer_id: number;
 
+  @Transform((value) => value.valueOf(), { toPlainOnly: true })
   @IsString()
   @IsNotEmpty()
-  issued_date: string;
+  issued_date: Date;
 
+  @Transform((value) => value.valueOf(), { toPlainOnly: true })
   @IsString()
   @IsNotEmpty()
-  due_date: string;
+  due_date: Date;
 
-  @IsString()
-  @IsNotEmpty()
-  return_date: string;
+  @Transform((value) => value.valueOf(), { toPlainOnly: true })
+  return_date: Date;
 }

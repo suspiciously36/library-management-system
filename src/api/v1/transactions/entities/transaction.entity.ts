@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Customer } from '../../customer/entities/customer.entity';
 import { Book } from '../../books/entities/book.entity';
@@ -20,13 +22,19 @@ export class Transaction {
   customer_id: number;
 
   @Column({ type: 'date' })
-  issued_date: string;
+  issued_date: Date;
 
   @Column({ type: 'date' })
-  due_date: string;
+  due_date: Date;
 
   @Column({ type: 'date', nullable: true })
-  return_date: string;
+  return_date: Date;
+
+  @CreateDateColumn({ default: () => 'NOW()' })
+  created_at: Date;
+
+  @UpdateDateColumn({ default: () => 'NOW()' })
+  updated_at: Date;
 
   @ManyToOne(() => Customer, (customer: Customer) => customer.transactions, {
     onDelete: 'CASCADE',

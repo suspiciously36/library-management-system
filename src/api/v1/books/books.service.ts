@@ -48,8 +48,18 @@ export class BooksService {
 
   async decreaseCopies(book_id: number): Promise<void> {
     const book: Book = await this.findOne(book_id);
+
     if (book) {
       book.copies_available -= 1;
+      this.bookRepository.save(book);
+    }
+  }
+
+  async increaseCopies(book_id: number): Promise<void> {
+    const book: Book = await this.findOne(book_id);
+
+    if (book) {
+      book.copies_available += 1;
       this.bookRepository.save(book);
     }
   }

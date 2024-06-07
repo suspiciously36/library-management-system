@@ -12,6 +12,9 @@ import { CategoriesModule } from './api/v1/categories/categories.module';
 import { Category } from './api/v1/categories/entities/category.entity';
 import { TransactionsModule } from './api/v1/transactions/transactions.module';
 import { Transaction } from './api/v1/transactions/entities/transaction.entity';
+import { AdminsModule } from './api/v1/admins/admins.module';
+import { Admin } from './api/v1/admins/entities/admin.entity';
+import { AuthModule } from './api/v1/auth/auth.module';
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { Transaction } from './api/v1/transactions/entities/transaction.entity';
       port: 5432,
       password: 'Hiimtuankiet36',
       username: 'postgres',
-      entities: [Customer, Book, Author, Category, Transaction],
+      entities: [Customer, Book, Author, Category, Transaction, Admin],
       database: 'library_management_database',
       synchronize: true,
       logging: true,
@@ -31,6 +34,8 @@ import { Transaction } from './api/v1/transactions/entities/transaction.entity';
     AuthorsModule,
     CategoriesModule,
     TransactionsModule,
+    AdminsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

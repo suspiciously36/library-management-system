@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Transaction } from '../../transactions/entities/transaction.entity';
 
 @Entity()
@@ -20,6 +27,12 @@ export class Customer {
 
   @Column({ type: 'enum', enum: ['m', 'f', 'u'] })
   gender: string;
+
+  @CreateDateColumn({ default: () => 'NOW()' })
+  created_at: Date;
+
+  @UpdateDateColumn({ default: () => 'NOW()' })
+  updated_at: Date;
 
   @OneToMany(
     () => Transaction,

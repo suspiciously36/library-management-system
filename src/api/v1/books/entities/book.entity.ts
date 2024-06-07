@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Author } from '../../authors/entities/author.entity';
 import { Category } from '../../categories/entities/category.entity';
@@ -32,6 +34,12 @@ export class Book {
 
   @Column({ type: 'int' })
   publication_year: number;
+
+  @CreateDateColumn({ default: () => 'NOW()' })
+  created_at: Date;
+
+  @UpdateDateColumn({ default: () => 'NOW()' })
+  updated_at: Date;
 
   @ManyToOne(() => Author, (author: Author) => author.books, {
     onDelete: 'CASCADE',

@@ -2,26 +2,27 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Book } from '../../books/entities/book.entity';
 
 @Entity()
-export class Category {
+export class Admin {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 200 })
-  name: string;
+  @Column({ type: 'varchar' })
+  username: string;
+
+  @Column({ type: 'varchar' })
+  password: string;
+
+  @Column({ type: 'varchar', unique: true })
+  email: string;
 
   @CreateDateColumn({ default: () => 'NOW()' })
   created_at: Date;
 
   @UpdateDateColumn({ default: () => 'NOW()' })
   updated_at: Date;
-
-  @OneToMany(() => Book, (book: Book) => book.category)
-  books: Book[];
 }

@@ -6,6 +6,7 @@ import { Transaction } from './entities/transaction.entity';
 import { Repository } from 'typeorm';
 import { BooksService } from '../books/books.service';
 import { CustomerService } from '../customer/customer.service';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Injectable()
 export class TransactionsService {
@@ -15,6 +16,7 @@ export class TransactionsService {
     private booksService: BooksService,
     private customerService: CustomerService,
   ) {}
+
   create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
     const transaction: Transaction = new Transaction();
     transaction.book_id = createTransactionDto.book_id;
@@ -25,11 +27,9 @@ export class TransactionsService {
     return this.transactionRepository.save(transaction);
   }
 
-  async createTransaction(
+  async createIssueTransaction(
     transactionData: Partial<Transaction>,
   ): Promise<Transaction> {
-    console.log(transactionData);
-
     const book = await this.booksService.findOne(transactionData.book_id);
 
     const customer = await this.customerService.findOneCustomer(
@@ -46,6 +46,26 @@ export class TransactionsService {
 
     await this.booksService.decreaseCopies(book.id);
     return this.transactionRepository.save(transactionData);
+  }
+
+  async createReturnTransaction(
+    id: string,
+    returnData: Date,
+  ): Promise<Transaction> {
+    const transaction = await this.findOne(+id);
+
+    if (!transaction) {
+      throw new Error('There is no such transaction (:id)');
+    }
+
+    transaction.return_date = returnData;
+
+    await this.transactionRepository.save(transaction);
+
+    const bookId = transaction.book_id;
+    await this.booksService.increaseCopies(bookId);
+
+    return transaction;
   }
 
   findAll(): Promise<Transaction[]> {
@@ -66,6 +86,7 @@ export class TransactionsService {
     transaction.due_date = updateTransactionDto.due_date;
     transaction.issued_date = updateTransactionDto.issued_date;
     transaction.return_date = updateTransactionDto.return_date;
+    transaction.id = id;
     return this.transactionRepository.save(transaction);
   }
 
