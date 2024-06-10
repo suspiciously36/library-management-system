@@ -12,7 +12,7 @@ export class AdminsService {
     @InjectRepository(Admin)
     private readonly adminsRepository: Repository<Admin>,
   ) {}
-  create(createAdminDto: CreateAdminDto): Promise<Admin> {
+  findOrCreateAdmin(createAdminDto: CreateAdminDto): Promise<Admin> {
     const admin: Admin = new Admin();
     admin.email = createAdminDto.email;
     admin.password = bcrypt.hashSync(createAdminDto.password, 10);
@@ -26,7 +26,7 @@ export class AdminsService {
       });
   }
 
-  findAll(): Promise<Admin[]> {
+  findAllAdmin(): Promise<Admin[]> {
     return this.adminsRepository.find();
   }
 
@@ -34,11 +34,11 @@ export class AdminsService {
     return this.adminsRepository.findOneBy({ username });
   }
 
-  findOne(id: number) {
+  findOneAdmin(id: number) {
     return this.adminsRepository.findOneBy({ id });
   }
 
-  update(id: number, updateAdminDto: UpdateAdminDto): Promise<Admin> {
+  updateAdmin(id: number, updateAdminDto: UpdateAdminDto): Promise<Admin> {
     const admin: Admin = new Admin();
     admin.email = updateAdminDto.email;
     admin.username = updateAdminDto.username;
@@ -47,7 +47,7 @@ export class AdminsService {
     return this.adminsRepository.save(admin);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
+  removeAdmin(id: number) {
+    return this.adminsRepository.delete({ id });
   }
 }

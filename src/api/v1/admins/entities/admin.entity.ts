@@ -20,6 +20,9 @@ export class Admin {
   @Column({ type: 'varchar', unique: true })
   email: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  refresh_token: string;
+
   @CreateDateColumn({ default: () => 'NOW()' })
   created_at: Date;
 

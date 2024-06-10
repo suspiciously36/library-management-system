@@ -13,6 +13,8 @@ export class CreateAdminDto {
   @IsNotEmpty()
   password: string;
 
+  refresh_token: string;
+
   created_at: Date;
   updated_at: Date;
 }

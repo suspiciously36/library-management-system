@@ -12,7 +12,7 @@ export class BooksService {
     private readonly bookRepository: Repository<Book>,
   ) {}
 
-  create(createBookDto: CreateBookDto): Promise<Book> {
+  createBook(createBookDto: CreateBookDto): Promise<Book> {
     const book: Book = new Book();
     book.title = createBookDto.title;
     book.copies_available = createBookDto.copies_available;
@@ -23,15 +23,15 @@ export class BooksService {
     return this.bookRepository.save(book);
   }
 
-  findAll(): Promise<Book[]> {
+  findAllBook(): Promise<Book[]> {
     return this.bookRepository.find();
   }
 
-  findOne(id: number) {
+  findOneBook(id: number) {
     return this.bookRepository.findOneBy({ id });
   }
 
-  update(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
+  updateBook(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
     const book: Book = new Book();
     book.title = updateBookDto.title;
     book.author_id = updateBookDto.author_id;
@@ -42,12 +42,12 @@ export class BooksService {
     return this.bookRepository.save(book);
   }
 
-  remove(id: number) {
+  removeBook(id: number) {
     return this.bookRepository.delete({ id });
   }
 
   async decreaseCopies(book_id: number): Promise<void> {
-    const book: Book = await this.findOne(book_id);
+    const book: Book = await this.findOneBook(book_id);
 
     if (book) {
       book.copies_available -= 1;
@@ -56,7 +56,7 @@ export class BooksService {
   }
 
   async increaseCopies(book_id: number): Promise<void> {
-    const book: Book = await this.findOne(book_id);
+    const book: Book = await this.findOneBook(book_id);
 
     if (book) {
       book.copies_available += 1;

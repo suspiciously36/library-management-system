@@ -11,28 +11,28 @@ export class AuthorsService {
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
   ) {}
-  create(createAuthorDto: CreateAuthorDto): Promise<Author> {
+  createAuthor(createAuthorDto: CreateAuthorDto): Promise<Author> {
     const author: Author = new Author();
     author.name = createAuthorDto.name;
     return this.authorRepository.save(author);
   }
 
-  findAll(): Promise<Author[]> {
+  findAllAuthor(): Promise<Author[]> {
     return this.authorRepository.find();
   }
 
-  findOne(id: number) {
+  findOneAuthor(id: number) {
     return this.authorRepository.findOneBy({ id });
   }
 
-  update(id: number, updateAuthorDto: UpdateAuthorDto): Promise<Author> {
+  updateAuthor(id: number, updateAuthorDto: UpdateAuthorDto): Promise<Author> {
     const author: Author = new Author();
     author.name = updateAuthorDto.name;
     author.id = id;
     return this.authorRepository.save(author);
   }
 
-  remove(id: number) {
+  removeAuthor(id: number) {
     return this.authorRepository.delete({ id });
   }
 }

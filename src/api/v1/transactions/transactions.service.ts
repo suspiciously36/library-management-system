@@ -6,7 +6,6 @@ import { Transaction } from './entities/transaction.entity';
 import { Repository } from 'typeorm';
 import { BooksService } from '../books/books.service';
 import { CustomerService } from '../customer/customer.service';
-import { AuthGuard } from '../auth/auth.guard';
 
 @Injectable()
 export class TransactionsService {
@@ -17,7 +16,9 @@ export class TransactionsService {
     private customerService: CustomerService,
   ) {}
 
-  create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
+  createTransaction(
+    createTransactionDto: CreateTransactionDto,
+  ): Promise<Transaction> {
     const transaction: Transaction = new Transaction();
     transaction.book_id = createTransactionDto.book_id;
     transaction.customer_id = createTransactionDto.customer_id;
@@ -30,7 +31,7 @@ export class TransactionsService {
   async createIssueTransaction(
     transactionData: Partial<Transaction>,
   ): Promise<Transaction> {
-    const book = await this.booksService.findOne(transactionData.book_id);
+    const book = await this.booksService.findOneBook(transactionData.book_id);
 
     const customer = await this.customerService.findOneCustomer(
       transactionData.customer_id,
@@ -52,7 +53,7 @@ export class TransactionsService {
     id: string,
     returnData: Date,
   ): Promise<Transaction> {
-    const transaction = await this.findOne(+id);
+    const transaction = await this.findOneTransaction(+id);
 
     if (!transaction) {
       throw new Error('There is no such transaction (:id)');
@@ -68,15 +69,15 @@ export class TransactionsService {
     return transaction;
   }
 
-  findAll(): Promise<Transaction[]> {
+  findAllTransaction(): Promise<Transaction[]> {
     return this.transactionRepository.find();
   }
 
-  findOne(id: number) {
+  findOneTransaction(id: number) {
     return this.transactionRepository.findOneBy({ id });
   }
 
-  update(
+  updateTransaction(
     id: number,
     updateTransactionDto: UpdateTransactionDto,
   ): Promise<Transaction> {
@@ -90,7 +91,7 @@ export class TransactionsService {
     return this.transactionRepository.save(transaction);
   }
 
-  remove(id: number) {
+  removeTransaction(id: number) {
     return this.transactionRepository.delete({ id });
   }
 }

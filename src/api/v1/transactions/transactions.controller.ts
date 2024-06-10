@@ -8,24 +8,28 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Transaction } from './entities/transaction.entity';
 import { AuthGuard } from '../auth/auth.guard';
+import { ResponseMessage } from 'src/decorators/responseMessage.decorator';
 
 @Controller('api/v1/transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @UseGuards(AuthGuard)
-  @Post()
+  @ResponseMessage()
+  @Post('add')
   create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionsService.create(createTransactionDto);
+    return this.transactionsService.createTransaction(createTransactionDto);
   }
 
   @Post('issue')
+  @ResponseMessage()
   createIssueTransaction(
     @Body() transactionData: Partial<Transaction>,
   ): Promise<Transaction> {
@@ -33,6 +37,7 @@ export class TransactionsController {
   }
 
   @Patch('return/:id')
+  @ResponseMessage()
   createReturnTransaction(
     @Param('id', ParseIntPipe) id: string,
     @Body('return_date') returnData: Date,
@@ -41,29 +46,52 @@ export class TransactionsController {
   }
 
   @UseGuards(AuthGuard)
+  @ResponseMessage()
   @Get()
-  findAll() {
-    return this.transactionsService.findAll();
+  async findAll() {
+    const transactions = this.transactionsService.findAllTransaction();
+    if (!transactions) {
+      throw new NotFoundException('Transactions not found!');
+    }
+    return transactions;
   }
 
   @UseGuards(AuthGuard)
+  @ResponseMessage()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transactionsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const transaction = this.transactionsService.findOneTransaction(+id);
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found!');
+    }
+    return transaction;
   }
 
   @UseGuards(AuthGuard)
+  @ResponseMessage()
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    return this.transactionsService.update(+id, updateTransactionDto);
+    const transaction = this.transactionsService.findOneTransaction(+id);
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found!');
+    }
+    return this.transactionsService.updateTransaction(
+      +id,
+      updateTransactionDto,
+    );
   }
 
   @UseGuards(AuthGuard)
+  @ResponseMessage()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.transactionsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const transaction = this.transactionsService.findOneTransaction(+id);
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found!');
+    }
+    return this.transactionsService.removeTransaction(+id);
   }
 }

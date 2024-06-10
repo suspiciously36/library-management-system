@@ -11,28 +11,31 @@ export class CategoriesService {
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
   ) {}
-  create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const category: Category = new Category();
     category.name = createCategoryDto.name;
     return this.categoryRepository.save(category);
   }
 
-  findAll(): Promise<Category[]> {
+  findAllCategory(): Promise<Category[]> {
     return this.categoryRepository.find();
   }
 
-  findOne(id: number) {
+  findOneCategory(id: number) {
     return this.categoryRepository.findOneBy({ id });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+  updateCategory(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
     const category: Category = new Category();
     category.name = updateCategoryDto.name;
     category.id = id;
     return this.categoryRepository.save(category);
   }
 
-  remove(id: number) {
+  removeCategory(id: number) {
     return this.categoryRepository.delete({ id });
   }
 }

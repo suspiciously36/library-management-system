@@ -6,37 +6,63 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthorsService } from './authors.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
+import { ResponseMessage } from 'src/decorators/responseMessage.decorator';
 
 @Controller('api/v1/authors')
 export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}
 
-  @Post()
+  @ResponseMessage()
+  @Post('add')
   create(@Body() createAuthorDto: CreateAuthorDto) {
-    return this.authorsService.create(createAuthorDto);
+    return this.authorsService.createAuthor(createAuthorDto);
   }
 
+  @ResponseMessage()
   @Get()
   findAll() {
-    return this.authorsService.findAll();
+    const authors = this.authorsService.findAllAuthor();
+    if (!authors) {
+      throw new NotFoundException('Authors not found!');
+    }
+    return authors;
   }
 
+  @ResponseMessage()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authorsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const author = await this.authorsService.findOneAuthor(+id);
+    if (!author) {
+      throw new NotFoundException('Author not found!');
+    }
+    return author;
   }
 
+  @ResponseMessage()
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthorDto: UpdateAuthorDto) {
-    return this.authorsService.update(+id, updateAuthorDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateAuthorDto: UpdateAuthorDto,
+  ) {
+    const author = await this.authorsService.findOneAuthor(+id);
+    if (!author) {
+      throw new NotFoundException('Author not found!');
+    }
+    return this.authorsService.updateAuthor(+id, updateAuthorDto);
   }
 
+  @ResponseMessage()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authorsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const author = await this.authorsService.findOneAuthor(+id);
+    if (!author) {
+      throw new NotFoundException('Author not found!');
+    }
+    return this.authorsService.removeAuthor(+id);
   }
 }
