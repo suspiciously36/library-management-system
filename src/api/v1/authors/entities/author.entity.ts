@@ -16,10 +16,10 @@ export class Author {
   @Column()
   name: string;
 
-  @CreateDateColumn({ default: () => 'NOW()' })
+  @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn({ default: () => 'NOW()' })
+  @UpdateDateColumn({ default: () => 'current_timestamp' })
   updated_at: Date;
 
   @OneToMany(() => Book, (book: Book) => book.author)

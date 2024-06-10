@@ -20,7 +20,7 @@ export class CustomerService {
     customer.phone = createCustomerDto.phone;
     customer.address = createCustomerDto.address;
     customer.email = createCustomerDto.email;
-    customer.gender = createCustomerDto.gender;
+    // customer.gender = createCustomerDto.gender;
 
     return this.customerRepository
       .upsert([customer], ['email'])

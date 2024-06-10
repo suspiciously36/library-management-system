@@ -35,10 +35,10 @@ export class Book {
   @Column({ type: 'int' })
   publication_year: number;
 
-  @CreateDateColumn({ default: () => 'NOW()' })
+  @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn({ default: () => 'NOW()' })
+  @UpdateDateColumn({ default: () => 'current_timestamp' })
   updated_at: Date;
 
   @ManyToOne(() => Author, (author: Author) => author.books, {

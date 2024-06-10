@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Request,
   NotFoundException,
 } from '@nestjs/common';
 import { AdminsService } from './admins.service';

@@ -25,13 +25,13 @@ export class Customer {
   @Column({ type: 'varchar' })
   address: string;
 
-  @Column({ type: 'enum', enum: ['m', 'f', 'u'] })
-  gender: string;
+  // @Column({ type: 'enum', enum: ['m', 'f', 'u'] })
+  // gender: string;
 
-  @CreateDateColumn({ default: () => 'NOW()' })
+  @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn({ default: () => 'NOW()' })
+  @UpdateDateColumn({ default: () => 'current_timestamp' })
   updated_at: Date;
 
   @OneToMany(

@@ -16,10 +16,10 @@ export class Category {
   @Column({ type: 'varchar', length: 200 })
   name: string;
 
-  @CreateDateColumn({ default: () => 'NOW()' })
+  @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn({ default: () => 'NOW()' })
+  @UpdateDateColumn({ default: () => 'current_timestamp' })
   updated_at: Date;
 
   @OneToMany(() => Book, (book: Book) => book.category)

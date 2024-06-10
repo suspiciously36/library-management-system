@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ResponseMessage } from 'src/decorators/responseMessage.decorator';
-// import * as bcrypt from 'bcrypt';
 
 @Controller('api/v1/auth')
 export class AuthController {

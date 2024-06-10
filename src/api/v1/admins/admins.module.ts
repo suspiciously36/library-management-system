@@ -6,7 +6,7 @@ import { Admin } from './entities/admin.entity';
 import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Admin]), AdminsModule],
+  imports: [TypeOrmModule.forFeature([Admin])],
   controllers: [AdminsController],
   providers: [AdminsService],
   exports: [AdminsService],

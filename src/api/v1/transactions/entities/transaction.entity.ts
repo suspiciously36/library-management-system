@@ -30,10 +30,10 @@ export class Transaction {
   @Column({ type: 'date', nullable: true })
   return_date: Date;
 
-  @CreateDateColumn({ default: () => 'NOW()' })
+  @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn({ default: () => 'NOW()' })
+  @UpdateDateColumn({ default: () => 'current_timestamp' })
   updated_at: Date;
 
   @ManyToOne(() => Customer, (customer: Customer) => customer.transactions, {
