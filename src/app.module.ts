@@ -2,19 +2,19 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CustomerModule } from './api/v1/customer/customer.module';
-import { Customer } from './api/v1/customer/entities/customer.entity';
-import { BooksModule } from './api/v1/books/books.module';
-import { Book } from './api/v1/books/entities/book.entity';
-import { AuthorsModule } from './api/v1/authors/authors.module';
-import { Author } from './api/v1/authors/entities/author.entity';
-import { CategoriesModule } from './api/v1/categories/categories.module';
-import { Category } from './api/v1/categories/entities/category.entity';
-import { TransactionsModule } from './api/v1/transactions/transactions.module';
-import { Transaction } from './api/v1/transactions/entities/transaction.entity';
-import { AdminsModule } from './api/v1/admins/admins.module';
-import { Admin } from './api/v1/admins/entities/admin.entity';
-import { AuthModule } from './api/v1/auth/auth.module';
+import { CustomerModule } from './modules/customer.module';
+import { Customer } from './entities/customer.entity';
+import { BooksModule } from './modules/books.module';
+import { Book } from './entities/book.entity';
+import { AuthorsModule } from './modules/authors.module';
+import { Author } from './entities/author.entity';
+import { CategoriesModule } from './modules/categories.module';
+import { Category } from './entities/category.entity';
+import { TransactionsModule } from './modules/transactions.module';
+import { Transaction } from './entities/transaction.entity';
+import { AdminsModule } from './modules/admins.module';
+import { Admin } from './entities/admin.entity';
+import { AuthModule } from './modules/auth.module';
 
 @Module({
   imports: [
