@@ -2,17 +2,20 @@ import { Module } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { AuthController } from '../controllers/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
+import { jwtConstants } from '../common/constants/constants';
 import { AdminsModule } from './admins.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Admin } from '../entities/admin.entity';
 
 @Module({
   imports: [
-    AdminsModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '86400' },
+      signOptions: { expiresIn: '30s' },
     }),
+    AdminsModule,
+    TypeOrmModule.forFeature([Admin]),
   ],
   controllers: [AuthController],
   providers: [AuthService],

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Admin } from '../entities/admin.entity';
@@ -25,29 +25,45 @@ export class AdminsService {
         return this.adminsRepository.findOneBy(insertAdminId);
       });
   }
-
-  findAllAdmin(): Promise<Admin[]> {
-    return this.adminsRepository.find();
+  async findAllAdmin(): Promise<Admin[]> {
+    const admins = this.adminsRepository.find();
+    if (!admins) {
+      throw new NotFoundException('Admins not found!');
+    }
+    return admins;
   }
 
   findOneUsername(username: string) {
     return this.adminsRepository.findOneBy({ username });
   }
 
-  findOneAdmin(id: number) {
-    return this.adminsRepository.findOneBy({ id });
+  async findOneAdmin(id: number) {
+    const admin = await this.adminsRepository.findOneBy({ id });
+    if (!admin) {
+      throw new NotFoundException('Admin not found!');
+    }
+    return admin;
   }
 
-  updateAdmin(id: number, updateAdminDto: UpdateAdminDto): Promise<Admin> {
-    const admin: Admin = new Admin();
+  async updateAdmin(
+    id: number,
+    updateAdminDto: UpdateAdminDto,
+  ): Promise<Admin> {
+    const admin = await this.findOneAdmin(id);
+    if (!admin) {
+      throw new NotFoundException('Admin not found!');
+    }
     admin.email = updateAdminDto.email;
     admin.username = updateAdminDto.username;
     admin.password = bcrypt.hashSync(updateAdminDto.password, 10);
-    admin.id = id;
     return this.adminsRepository.save(admin);
   }
 
-  removeAdmin(id: number) {
+  async removeAdmin(id: number) {
+    const admin = await this.findOneAdmin(id);
+    if (!admin) {
+      throw new NotFoundException('Admin not found!');
+    }
     return this.adminsRepository.delete({ id });
   }
 }

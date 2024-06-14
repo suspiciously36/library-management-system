@@ -15,6 +15,10 @@ export class CreateBookDto {
 
   @IsInt()
   @IsNotEmpty()
+  total_copies: number;
+
+  @IsInt()
+  @IsNotEmpty()
   category_id: number;
 
   @IsInt()

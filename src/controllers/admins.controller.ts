@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  NotFoundException,
 } from '@nestjs/common';
 import { AdminsService } from '../services/admins.service';
 import { ResponseMessage } from 'src/common/decorators/responseMessage.decorator';
@@ -29,22 +28,14 @@ export class AdminsController {
   @ResponseMessage()
   @Get()
   async findAll() {
-    const admins = await this.adminsService.findAllAdmin();
-    if (!admins) {
-      throw new NotFoundException('Admins not found!');
-    }
-    return admins;
+    return await this.adminsService.findAllAdmin();
   }
 
   @UseGuards(AuthGuard)
   @ResponseMessage()
   @Get(':id')
   findOne(@Param('id') id: string) {
-    const admin = this.adminsService.findOneAdmin(+id);
-    if (!admin) {
-      throw new NotFoundException('Admin not found!');
-    }
-    return admin;
+    return this.adminsService.findOneAdmin(+id);
   }
 
   @UseGuards(AuthGuard)
@@ -54,10 +45,6 @@ export class AdminsController {
     @Param('id') id: string,
     @Body() updateAdminDto: UpdateAdminDto,
   ) {
-    const admin = await this.adminsService.findOneAdmin(+id);
-    if (!admin) {
-      throw new NotFoundException('Admin not found!');
-    }
     return this.adminsService.updateAdmin(+id, updateAdminDto);
   }
 
@@ -65,10 +52,6 @@ export class AdminsController {
   @ResponseMessage()
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const admin = await this.adminsService.findOneAdmin(+id);
-    if (!admin) {
-      throw new NotFoundException('Admin not found!');
-    }
     return this.adminsService.removeAdmin(+id);
   }
 }

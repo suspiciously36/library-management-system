@@ -23,6 +23,8 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   due_date: Date;
 
+  is_returned: boolean;
+
   @Transform((value) => value.valueOf(), { toPlainOnly: true })
   return_date: Date;
 }

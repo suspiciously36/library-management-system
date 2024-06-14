@@ -4,8 +4,8 @@ import * as bcrypt from 'bcrypt';
 
 define(Admin, () => {
   const admin = new Admin();
-  (admin.email = 'admintest3@gmail.com'),
-    (admin.username = 'admin3'),
-    (admin.password = bcrypt.hashSync('admin3', 10));
+  (admin.email = 'admin.seeder@gmail.com'),
+    (admin.username = 'admin'),
+    (admin.password = bcrypt.hashSync('admin', 10));
   return admin;
 });

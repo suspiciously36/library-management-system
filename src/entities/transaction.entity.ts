@@ -30,6 +30,9 @@ export class Transaction {
   @Column({ type: 'date', nullable: true })
   return_date: Date;
 
+  @Column({ type: 'boolean', default: false })
+  is_returned: boolean;
+
   @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;
 

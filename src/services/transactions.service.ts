@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transaction.entity';
 import { Repository } from 'typeorm';
@@ -59,39 +59,66 @@ export class TransactionsService {
       throw new Error('There is no such transaction (:id)');
     }
 
+    if (transaction.is_returned) {
+      throw new Error('This Transaction is already returned!');
+    }
     transaction.return_date = returnData;
+    transaction.is_returned = true;
 
     await this.transactionRepository.save(transaction);
 
     const bookId = transaction.book_id;
-    await this.booksService.increaseCopies(bookId);
+    const book = await this.booksService.findOneBook(bookId);
+
+    if (book.copies_available < book.total_copies) {
+      book.copies_available += 1;
+      await this.booksService.updateCopiesAvailable(
+        book.id,
+        book.copies_available,
+      );
+    }
 
     return transaction;
   }
 
-  findAllTransaction(): Promise<Transaction[]> {
-    return this.transactionRepository.find();
+  async findAllTransaction(): Promise<Transaction[]> {
+    const transactions = await this.transactionRepository.find();
+    if (!transactions) {
+      throw new NotFoundException('Transactions not found.');
+    }
+    return transactions;
   }
 
-  findOneTransaction(id: number) {
-    return this.transactionRepository.findOneBy({ id });
+  async findOneTransaction(id: number) {
+    const transaction = await this.transactionRepository.findOneBy({ id });
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found.');
+    }
+    return transaction;
   }
 
-  updateTransaction(
+  async updateTransaction(
     id: number,
     updateTransactionDto: UpdateTransactionDto,
   ): Promise<Transaction> {
-    const transaction: Transaction = new Transaction();
+    const transaction = await this.transactionRepository.findOneBy({ id });
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found.');
+    }
     transaction.book_id = updateTransactionDto.book_id;
     transaction.customer_id = updateTransactionDto.customer_id;
     transaction.due_date = updateTransactionDto.due_date;
     transaction.issued_date = updateTransactionDto.issued_date;
     transaction.return_date = updateTransactionDto.return_date;
-    transaction.id = id;
+    transaction.is_returned = updateTransactionDto.is_returned;
     return this.transactionRepository.save(transaction);
   }
 
-  removeTransaction(id: number) {
+  async removeTransaction(id: number) {
+    const transaction = await this.transactionRepository.findOneBy({ id });
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found.');
+    }
     return this.transactionRepository.delete({ id });
   }
 }

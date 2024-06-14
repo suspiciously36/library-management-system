@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Customer } from '../entities/customer.entity';
@@ -30,28 +30,43 @@ export class CustomerService {
       });
   }
 
-  findAllCustomer(): Promise<Customer[]> {
-    return this.customerRepository.find();
+  async findAllCustomer(): Promise<Customer[]> {
+    const customers = await this.customerRepository.find();
+    if (!customers) {
+      throw new NotFoundException('Customers not found.');
+    }
+    return customers;
   }
 
-  findOneCustomer(id: number) {
-    return this.customerRepository.findOneBy({ id });
+  async findOneCustomer(id: number) {
+    const customer = await this.customerRepository.findOneBy({ id });
+    if (!customer) {
+      throw new NotFoundException('Customer not found.');
+    }
+
+    return customer;
   }
 
-  updateCustomer(
+  async updateCustomer(
     id: number,
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
-    const customer: Customer = new Customer();
+    const customer = await this.customerRepository.findOneBy({ id });
+    if (!customer) {
+      throw new NotFoundException('Customer not found.');
+    }
     customer.name = updateCustomerDto.name;
     customer.phone = updateCustomerDto.phone;
     customer.address = updateCustomerDto.address;
     customer.email = updateCustomerDto.email;
-    customer.id = id;
     return this.customerRepository.save(customer);
   }
 
-  removeCustomer(id: number) {
+  async removeCustomer(id: number) {
+    const customer = await this.customerRepository.findOneBy({ id });
+    if (!customer) {
+      throw new NotFoundException('Customer not found.');
+    }
     return this.customerRepository.delete({ id });
   }
 }

@@ -9,7 +9,16 @@ export class AuthController {
   @ResponseMessage()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  async signIn(@Body() signInDto: Record<string, any>) {
+    return await this.authService.signIn(
+      signInDto.username,
+      signInDto.password,
+    );
+  }
+
+  @ResponseMessage()
+  @Post('refresh')
+  async refresh() {
+    return await this.authService.refresh();
   }
 }

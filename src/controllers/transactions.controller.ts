@@ -49,22 +49,14 @@ export class TransactionsController {
   @ResponseMessage()
   @Get()
   async findAll() {
-    const transactions = this.transactionsService.findAllTransaction();
-    if (!transactions) {
-      throw new NotFoundException('Transactions not found!');
-    }
-    return transactions;
+    return this.transactionsService.findAllTransaction();
   }
 
   @UseGuards(AuthGuard)
   @ResponseMessage()
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const transaction = this.transactionsService.findOneTransaction(+id);
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found!');
-    }
-    return transaction;
+    return this.transactionsService.findOneTransaction(+id);
   }
 
   @UseGuards(AuthGuard)
@@ -74,10 +66,6 @@ export class TransactionsController {
     @Param('id') id: string,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    const transaction = this.transactionsService.findOneTransaction(+id);
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found!');
-    }
     return this.transactionsService.updateTransaction(
       +id,
       updateTransactionDto,
@@ -88,10 +76,6 @@ export class TransactionsController {
   @ResponseMessage()
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const transaction = this.transactionsService.findOneTransaction(+id);
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found!');
-    }
     return this.transactionsService.removeTransaction(+id);
   }
 }

@@ -26,21 +26,13 @@ export class AuthorsController {
   @ResponseMessage()
   @Get()
   findAll() {
-    const authors = this.authorsService.findAllAuthor();
-    if (!authors) {
-      throw new NotFoundException('Authors not found!');
-    }
-    return authors;
+    return this.authorsService.findAllAuthor();
   }
 
   @ResponseMessage()
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const author = await this.authorsService.findOneAuthor(+id);
-    if (!author) {
-      throw new NotFoundException('Author not found!');
-    }
-    return author;
+    return this.authorsService.findOneAuthor(+id);
   }
 
   @ResponseMessage()
@@ -49,20 +41,12 @@ export class AuthorsController {
     @Param('id') id: string,
     @Body() updateAuthorDto: UpdateAuthorDto,
   ) {
-    const author = await this.authorsService.findOneAuthor(+id);
-    if (!author) {
-      throw new NotFoundException('Author not found!');
-    }
     return this.authorsService.updateAuthor(+id, updateAuthorDto);
   }
 
   @ResponseMessage()
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const author = await this.authorsService.findOneAuthor(+id);
-    if (!author) {
-      throw new NotFoundException('Author not found!');
-    }
     return this.authorsService.removeAuthor(+id);
   }
 }

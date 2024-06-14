@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Author } from '../entities/author.entity';
 import { Repository } from 'typeorm';
@@ -17,22 +17,39 @@ export class AuthorsService {
     return this.authorRepository.save(author);
   }
 
-  findAllAuthor(): Promise<Author[]> {
-    return this.authorRepository.find();
+  async findAllAuthor(): Promise<Author[]> {
+    const authors = await this.authorRepository.find();
+    if (!authors) {
+      throw new NotFoundException('Authors not found!');
+    }
+    return authors;
   }
 
-  findOneAuthor(id: number) {
-    return this.authorRepository.findOneBy({ id });
+  async findOneAuthor(id: number) {
+    const author = await this.authorRepository.findOneBy({ id });
+    if (!author) {
+      throw new NotFoundException('Author not found!');
+    }
+    return author;
   }
 
-  updateAuthor(id: number, updateAuthorDto: UpdateAuthorDto): Promise<Author> {
-    const author: Author = new Author();
+  async updateAuthor(
+    id: number,
+    updateAuthorDto: UpdateAuthorDto,
+  ): Promise<Author> {
+    const author = await this.findOneAuthor(id);
+    if (!author) {
+      throw new NotFoundException('Author not found!');
+    }
     author.name = updateAuthorDto.name;
-    author.id = id;
     return this.authorRepository.save(author);
   }
 
-  removeAuthor(id: number) {
+  async removeAuthor(id: number) {
+    const author = await this.findOneAuthor(id);
+    if (!author) {
+      throw new NotFoundException('Author not found!');
+    }
     return this.authorRepository.delete({ id });
   }
 }

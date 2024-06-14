@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  NotFoundException,
 } from '@nestjs/common';
 import { CustomerService } from '../services/customer.service';
 import { ResponseMessage } from 'src/common/decorators/responseMessage.decorator';
@@ -28,21 +27,13 @@ export class CustomerController {
   @ResponseMessage()
   @Get()
   async findAll() {
-    const customers = await this.customerService.findAllCustomer();
-    if (!customers) {
-      throw new NotFoundException('Customers not found!');
-    }
-    return customers;
+    return await this.customerService.findAllCustomer();
   }
 
   @ResponseMessage()
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const customer = await this.customerService.findOneCustomer(+id);
-    if (!customer) {
-      throw new NotFoundException('Customer not found!');
-    }
-    return customer;
+    return await this.customerService.findOneCustomer(+id);
   }
 
   @ResponseMessage()
@@ -51,20 +42,12 @@ export class CustomerController {
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
-    const customer = await this.customerService.findOneCustomer(+id);
-    if (!customer) {
-      throw new NotFoundException('Customer not found!');
-    }
     return this.customerService.updateCustomer(+id, updateCustomerDto);
   }
 
   @ResponseMessage()
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const customer = await this.customerService.findOneCustomer(+id);
-    if (!customer) {
-      throw new NotFoundException('Customer not found!');
-    }
     return this.customerService.removeCustomer(+id);
   }
 }

@@ -26,21 +26,13 @@ export class CategoriesController {
   @ResponseMessage()
   @Get()
   async findAll() {
-    const categories = await this.categoriesService.findAllCategory();
-    if (!categories) {
-      throw new NotFoundException('Categories not found!');
-    }
-    return categories;
+    return await this.categoriesService.findAllCategory();
   }
 
   @ResponseMessage()
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const category = await this.categoriesService.findOneCategory(+id);
-    if (!category) {
-      throw new NotFoundException('Category not found!');
-    }
-    return category;
+    return await this.categoriesService.findOneCategory(+id);
   }
 
   @ResponseMessage()

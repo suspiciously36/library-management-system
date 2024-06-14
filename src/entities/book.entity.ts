@@ -29,6 +29,9 @@ export class Book {
   @Column({ type: 'int' })
   copies_available: number;
 
+  @Column({ type: 'int', nullable: true })
+  total_copies: number;
+
   @Column({ type: 'varchar', length: 20 })
   isbn: string;
 
