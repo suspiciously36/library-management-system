@@ -6,17 +6,19 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthorsService } from '../services/authors.service';
 import { CreateAuthorDto } from './../dto/authors/create-author.dto';
 import { UpdateAuthorDto } from './../dto/authors/update-author.dto';
 import { ResponseMessage } from 'src/common/decorators/responseMessage.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
 
 @Controller('api/v1/authors')
 export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}
 
+  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Post('add')
   create(@Body() createAuthorDto: CreateAuthorDto) {
@@ -35,6 +37,7 @@ export class AuthorsController {
     return this.authorsService.findOneAuthor(+id);
   }
 
+  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Patch(':id')
   async update(

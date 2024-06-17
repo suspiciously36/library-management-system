@@ -1,11 +1,8 @@
 import {
   BadRequestException,
-  Body,
   Inject,
   Injectable,
   InternalServerErrorException,
-  Req,
-  Res,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -49,7 +46,7 @@ export class AuthService {
     const refreshToken = await this.jwtService.signAsync(refPayload);
 
     user.refresh_token = refreshToken;
-    this.adminRepository.save(user);
+    await this.adminRepository.save(user);
 
     const res = this.req.res as Response;
 
@@ -64,8 +61,7 @@ export class AuthService {
     };
   }
 
-  async refresh() // @Body() body: { refresh_token: string },
-  : Promise<{ access_token: string; refresh_token: string }> {
+  async refresh(): Promise<{ access_token: string; refresh_token: string }> {
     const req = this.req;
     const refreshToken = req.cookies['refreshToken'];
     if (!refreshToken) {
@@ -80,10 +76,9 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token invalid');
     }
 
-    const adminToken = admin.refresh_token;
     const payload = { sub: admin.id, username: admin.username };
     try {
-      const decoded = await this.jwtService.verifyAsync(adminToken);
+      const decoded = await this.jwtService.verifyAsync(refreshToken);
 
       if (!decoded) {
         throw new UnauthorizedException();
@@ -91,14 +86,31 @@ export class AuthService {
 
       const newAccessToken = await this.jwtService.signAsync(payload);
       if (!newAccessToken) {
-        throw new InternalServerErrorException();
+        throw new InternalServerErrorException(
+          'Failed to generate access token.',
+        );
       }
+
+      const newRefreshToken = await this.jwtService.signAsync(
+        {},
+        { expiresIn: '7d' },
+      );
+
+      admin.refresh_token = newRefreshToken;
+      await this.adminRepository.save(admin);
+
+      req.res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+      });
+
       return {
         access_token: newAccessToken,
-        refresh_token: refreshToken,
+        refresh_token: newRefreshToken,
       };
     } catch (e) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('#2 Unauthorized');
     }
   }
 }

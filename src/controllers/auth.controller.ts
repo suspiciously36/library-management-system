@@ -17,6 +17,7 @@ export class AuthController {
   }
 
   @ResponseMessage()
+  @HttpCode(HttpStatus.OK)
   @Post('refresh')
   async refresh() {
     return await this.authService.refresh();

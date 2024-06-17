@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
 } from '@nestjs/common';
 import { BooksService } from '../services/books.service';
 import { ResponseMessage } from 'src/common/decorators/responseMessage.decorator';
