@@ -12,7 +12,7 @@ import { Admin } from '../entities/admin.entity';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '30s' },
+      signOptions: { expiresIn: '30m' },
     }),
     AdminsModule,
     TypeOrmModule.forFeature([Admin]),

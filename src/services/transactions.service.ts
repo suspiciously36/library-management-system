@@ -62,22 +62,33 @@ export class TransactionsService {
     if (transaction.is_returned) {
       throw new Error('This Transaction is already returned!');
     }
-    transaction.return_date = returnData;
+
+    const returnDate =
+      returnData instanceof Date ? returnData : new Date(returnData);
+
+    const dueDate =
+      transaction.due_date instanceof Date
+        ? transaction.due_date
+        : new Date(transaction.due_date);
+
+    transaction.return_date = returnDate;
+    transaction.due_date = dueDate;
     transaction.is_returned = true;
 
     await this.transactionRepository.save(transaction);
 
+    // Updating Book_copiesAvailable
     const bookId = transaction.book_id;
     const book = await this.booksService.findOneBook(bookId);
 
     if (book.copies_available < book.total_copies) {
       book.copies_available += 1;
+
       await this.booksService.updateCopiesAvailable(
         book.id,
         book.copies_available,
       );
     }
-
     return transaction;
   }
 

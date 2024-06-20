@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -29,6 +30,9 @@ export class AuthService {
     pass: string,
   ): Promise<{ access_token: string }> {
     const user = await this.adminsService.findOneUsername(username);
+    if (!user) {
+      throw new NotFoundException('Username not found.');
+    }
 
     const isMatch = bcrypt.compareSync(pass, user?.password);
     if (!isMatch) {
@@ -40,10 +44,10 @@ export class AuthService {
       sub: Math.random() + new Date().getTime(),
     };
     const accessToken = await this.jwtService.signAsync(payload);
-    if (!accessToken) {
+    const refreshToken = await this.jwtService.signAsync(refPayload);
+    if (!accessToken || !refreshToken) {
       throw new Error('Bruh!');
     }
-    const refreshToken = await this.jwtService.signAsync(refPayload);
 
     user.refresh_token = refreshToken;
     await this.adminRepository.save(user);

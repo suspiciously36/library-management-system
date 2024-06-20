@@ -33,15 +33,16 @@ export class BooksService {
   }
 
   async findOneBook(id: number) {
-    const book = await this.findOneBook(id);
+    const book = await this.bookRepository.findOneBy({ id });
     if (!book) {
       throw new NotFoundException('Book not found.');
     }
-    return this.bookRepository.findOneBy({ id });
+    return book;
   }
 
   async updateBook(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
-    const book = await this.findOneBook(id);
+    const book = await this.bookRepository.findOneBy({ id });
+
     if (!book) {
       throw new NotFoundException('Book not found.');
     }
@@ -55,7 +56,8 @@ export class BooksService {
   }
 
   async removeBook(id: number) {
-    const book = await this.findOneBook(id);
+    const book = await this.bookRepository.findOneBy({ id });
+
     if (!book) {
       throw new NotFoundException('Book not found.');
     }

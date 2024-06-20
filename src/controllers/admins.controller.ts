@@ -15,6 +15,7 @@ import { UpdateAdminDto } from 'src/dto/admins/update-admin.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller('api/v1/admins')
+@UseGuards(AuthGuard)
 export class AdminsController {
   constructor(private readonly adminsService: AdminsService) {}
 
@@ -24,21 +25,18 @@ export class AdminsController {
     return this.adminsService.findOrCreateAdmin(createAdminDto);
   }
 
-  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Get()
   async findAll() {
     return await this.adminsService.findAllAdmin();
   }
 
-  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.adminsService.findOneAdmin(+id);
   }
 
-  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Patch(':id')
   async update(
@@ -48,7 +46,6 @@ export class AdminsController {
     return this.adminsService.updateAdmin(+id, updateAdminDto);
   }
 
-  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Delete(':id')
   async remove(@Param('id') id: string) {

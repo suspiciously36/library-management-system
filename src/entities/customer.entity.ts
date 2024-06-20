@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Transaction } from './transaction.entity';
+import { Fine } from './fine.entity';
 
 @Entity()
 export class Customer {
@@ -39,4 +40,7 @@ export class Customer {
     (transaction: Transaction) => transaction.customer,
   )
   transactions: Transaction[];
+
+  @OneToMany(() => Fine, (fine: Fine) => fine.customer)
+  fines: Fine[];
 }

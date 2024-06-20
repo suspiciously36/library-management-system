@@ -13,7 +13,7 @@ export const customerData = [
   },
   {
     name: 'Hoang Tuan Kiet',
-    email: 'kiet@gmail.com',
+    email: '082.hoangtuankiet@gmail.com',
     address: '195 Cau Giay',
     phone: '0868906082',
   },

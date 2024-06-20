@@ -3,18 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CustomerModule } from './modules/customer.module';
-import { Customer } from './entities/customer.entity';
 import { BooksModule } from './modules/books.module';
-import { Book } from './entities/book.entity';
 import { AuthorsModule } from './modules/authors.module';
-import { Author } from './entities/author.entity';
 import { CategoriesModule } from './modules/categories.module';
-import { Category } from './entities/category.entity';
 import { TransactionsModule } from './modules/transactions.module';
-import { Transaction } from './entities/transaction.entity';
 import { AdminsModule } from './modules/admins.module';
-import { Admin } from './entities/admin.entity';
 import { AuthModule } from './modules/auth.module';
+import { FineModule } from './modules/fine.module';
+import { NotificationsModule } from './modules/notifications.module';
 
 @Module({
   imports: [
@@ -30,7 +26,7 @@ import { AuthModule } from './modules/auth.module';
       // logging: true,
       type: 'sqlite',
       database: 'db/sql',
-      entities: [Customer, Book, Author, Category, Transaction, Admin],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
     CustomerModule,
@@ -40,6 +36,8 @@ import { AuthModule } from './modules/auth.module';
     TransactionsModule,
     AdminsModule,
     AuthModule,
+    FineModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
