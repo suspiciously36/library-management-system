@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Book } from '../entities/book.entity';
 import { CreateBookDto } from 'src/dto/books/create-book.dto';
 import { UpdateBookDto } from 'src/dto/books/update-book.dto';
+import { SearchBookDto } from '../dto/books/search-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -11,6 +12,8 @@ export class BooksService {
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
   ) {}
+
+  // CRUD
 
   createBook(createBookDto: CreateBookDto): Promise<Book> {
     const book: Book = new Book();
@@ -64,6 +67,7 @@ export class BooksService {
     return this.bookRepository.delete({ id });
   }
 
+  // Business logic
   async decreaseCopies(book_id: number): Promise<void> {
     const book: Book = await this.findOneBook(book_id);
 
@@ -80,5 +84,37 @@ export class BooksService {
     copies_available: number,
   ): Promise<void> {
     await this.bookRepository.update(book_id, { copies_available });
+  }
+
+  async searchBooks(searchBookDto: SearchBookDto): Promise<Book[]> {
+    const { title, author, category, available } = searchBookDto;
+    const query = this.bookRepository
+      .createQueryBuilder('book')
+      .leftJoinAndSelect('book.author', 'author')
+      .leftJoinAndSelect('book.category', 'category');
+
+    if (title) {
+      query.andWhere('book.title LIKE :title', { title: `%${title}%` });
+    }
+
+    if (author) {
+      query.andWhere('author.name LIKE :author', { author: `%${author}%` });
+    }
+
+    if (category) {
+      query.andWhere('category.name LIKE :category', {
+        category: `%${category}%`,
+      });
+    }
+
+    if (available !== undefined) {
+      if (available === 'true') {
+        query.andWhere('book.copies_available > 0');
+      } else if (available === 'false') {
+        query.andWhere('book.copies_available = 0');
+      }
+    }
+
+    return query.getMany();
   }
 }

@@ -6,6 +6,7 @@ import { CustomerService } from './customer.service';
 import { UpdateTransactionDto } from 'src/dto/transactions/update-transaction.dto';
 import { CreateTransactionDto } from 'src/dto/transactions/create-transaction.dto';
 import { BooksService } from './books.service';
+import { dateTypeTransformer } from '../common/utils/dateType.transformer';
 
 @Injectable()
 export class TransactionsService {
@@ -63,13 +64,8 @@ export class TransactionsService {
       throw new Error('This Transaction is already returned!');
     }
 
-    const returnDate =
-      returnData instanceof Date ? returnData : new Date(returnData);
-
-    const dueDate =
-      transaction.due_date instanceof Date
-        ? transaction.due_date
-        : new Date(transaction.due_date);
+    const returnDate = dateTypeTransformer(returnData);
+    const dueDate = dateTypeTransformer(transaction.due_date);
 
     transaction.return_date = returnDate;
     transaction.due_date = dueDate;

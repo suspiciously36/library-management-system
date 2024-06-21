@@ -54,7 +54,12 @@ export class FineService {
         customer.email,
         fine.overdue_fee,
       );
-      return this.fineRepository.save(fine);
+      return this.fineRepository
+        .upsert([fine], ['transaction_id'])
+        .then((insertResult) => {
+          const id = insertResult.identifiers[0].id;
+          return this.fineRepository.findOneBy({ id: id });
+        });
     }
   }
 
@@ -79,7 +84,12 @@ export class FineService {
       fine.overdue_fee,
     );
 
-    return this.fineRepository.save(fine);
+    return this.fineRepository
+      .upsert([fine], ['transaction_id'])
+      .then((insertResult) => {
+        const id = insertResult.identifiers[0].id;
+        return this.fineRepository.findOneBy({ id: id });
+      });
   }
 
   // CRUD

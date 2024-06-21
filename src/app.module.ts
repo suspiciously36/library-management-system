@@ -27,6 +27,7 @@ import { NotificationsModule } from './modules/notifications.module';
       type: 'sqlite',
       database: 'db/sql',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      logging: true,
       synchronize: true,
     }),
     CustomerModule,

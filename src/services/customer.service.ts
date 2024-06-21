@@ -12,7 +12,7 @@ export class CustomerService {
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  findOrCreateCustomer(
+  async findOrCreateCustomer(
     createCustomerDto: CreateCustomerDto,
   ): Promise<Customer> {
     const customer: Customer = new Customer();

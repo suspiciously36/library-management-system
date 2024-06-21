@@ -8,7 +8,6 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
-  NotFoundException,
 } from '@nestjs/common';
 import { TransactionsService } from '../services/transactions.service';
 import { Transaction } from '../entities/transaction.entity';

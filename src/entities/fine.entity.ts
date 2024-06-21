@@ -24,7 +24,7 @@ export class Fine {
   @Column('boolean', { default: false })
   is_paid: boolean;
 
-  @Column('int')
+  @Column('int', { unique: true })
   transaction_id: number;
 
   @Column('int')

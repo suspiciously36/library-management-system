@@ -47,6 +47,7 @@ export class AuthorsController {
     return this.authorsService.updateAuthor(+id, updateAuthorDto);
   }
 
+  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Delete(':id')
   async remove(@Param('id') id: string) {
