@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Transaction } from './transaction.entity';
 import { Fine } from './fine.entity';
+import { Reservation } from './reservation.entity';
 
 @Entity()
 export class Customer {
@@ -43,4 +44,10 @@ export class Customer {
 
   @OneToMany(() => Fine, (fine: Fine) => fine.customer)
   fines: Fine[];
+
+  @OneToMany(
+    () => Reservation,
+    (reservation: Reservation) => reservation.customer,
+  )
+  reservations: Reservation[];
 }

@@ -11,6 +11,10 @@ import { AdminsModule } from './modules/admins.module';
 import { AuthModule } from './modules/auth.module';
 import { FineModule } from './modules/fine.module';
 import { NotificationsModule } from './modules/notifications.module';
+import { ReservationsModule } from './modules/reservations.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SchedulerController } from './controllers/scheduler.controller';
+import { SchedulerModule } from './modules/scheduler.module';
 
 @Module({
   imports: [
@@ -39,6 +43,9 @@ import { NotificationsModule } from './modules/notifications.module';
     AuthModule,
     FineModule,
     NotificationsModule,
+    ReservationsModule,
+    ScheduleModule.forRoot(),
+    SchedulerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

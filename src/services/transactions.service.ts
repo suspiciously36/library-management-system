@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transaction.entity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { CustomerService } from './customer.service';
 import { UpdateTransactionDto } from 'src/dto/transactions/update-transaction.dto';
 import { CreateTransactionDto } from 'src/dto/transactions/create-transaction.dto';
 import { BooksService } from './books.service';
 import { dateTypeTransformer } from '../common/utils/dateType.transformer';
+import { NotificationsService } from './notifications.service';
+import { numOfDaysCalc } from '../common/utils/calculateNumOfDays.util';
 
 @Injectable()
 export class TransactionsService {
@@ -15,6 +17,7 @@ export class TransactionsService {
     private readonly transactionRepository: Repository<Transaction>,
     private booksService: BooksService,
     private customerService: CustomerService,
+    private notificationService: NotificationsService,
   ) {}
 
   createTransaction(
@@ -28,6 +31,49 @@ export class TransactionsService {
     transaction.return_date = createTransactionDto.return_date;
     return this.transactionRepository.save(transaction);
   }
+
+  async findAllTransaction(): Promise<Transaction[]> {
+    const transactions = await this.transactionRepository.find();
+    if (!transactions) {
+      throw new NotFoundException('Transactions not found.');
+    }
+    return transactions;
+  }
+
+  async findOneTransaction(id: number) {
+    const transaction = await this.transactionRepository.findOneBy({ id });
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found.');
+    }
+    return transaction;
+  }
+
+  async updateTransaction(
+    id: number,
+    updateTransactionDto: UpdateTransactionDto,
+  ): Promise<Transaction> {
+    const transaction = await this.transactionRepository.findOneBy({ id });
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found.');
+    }
+    transaction.book_id = updateTransactionDto.book_id;
+    transaction.customer_id = updateTransactionDto.customer_id;
+    transaction.due_date = updateTransactionDto.due_date;
+    transaction.issued_date = updateTransactionDto.issued_date;
+    transaction.return_date = updateTransactionDto.return_date;
+    transaction.is_returned = updateTransactionDto.is_returned;
+    return this.transactionRepository.save(transaction);
+  }
+
+  async removeTransaction(id: number) {
+    const transaction = await this.transactionRepository.findOneBy({ id });
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found.');
+    }
+    return this.transactionRepository.delete({ id });
+  }
+
+  // Business Logic
 
   async createIssueTransaction(
     transactionData: Partial<Transaction>,
@@ -88,44 +134,21 @@ export class TransactionsService {
     return transaction;
   }
 
-  async findAllTransaction(): Promise<Transaction[]> {
-    const transactions = await this.transactionRepository.find();
-    if (!transactions) {
-      throw new NotFoundException('Transactions not found.');
-    }
-    return transactions;
-  }
+  async checkOverdueStatus(): Promise<void> {
+    const now = new Date();
+    const overdueIssuance = await this.transactionRepository.find({
+      where: { due_date: LessThan(now), is_returned: false },
+      relations: ['book', 'customer'],
+    });
 
-  async findOneTransaction(id: number) {
-    const transaction = await this.transactionRepository.findOneBy({ id });
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found.');
-    }
-    return transaction;
-  }
+    // MAILER DEMO: ACTIVATE THIS WILL SEND MAIL DEPENDS ON THE CRON EXPRESS
 
-  async updateTransaction(
-    id: number,
-    updateTransactionDto: UpdateTransactionDto,
-  ): Promise<Transaction> {
-    const transaction = await this.transactionRepository.findOneBy({ id });
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found.');
-    }
-    transaction.book_id = updateTransactionDto.book_id;
-    transaction.customer_id = updateTransactionDto.customer_id;
-    transaction.due_date = updateTransactionDto.due_date;
-    transaction.issued_date = updateTransactionDto.issued_date;
-    transaction.return_date = updateTransactionDto.return_date;
-    transaction.is_returned = updateTransactionDto.is_returned;
-    return this.transactionRepository.save(transaction);
-  }
-
-  async removeTransaction(id: number) {
-    const transaction = await this.transactionRepository.findOneBy({ id });
-    if (!transaction) {
-      throw new NotFoundException('Transaction not found.');
-    }
-    return this.transactionRepository.delete({ id });
+    // for (const issuance of overdueIssuance) {
+    //   await this.notificationService.sendOverdueNotification(
+    //     issuance.customer.email,
+    //     issuance.book.title,
+    //     numOfDaysCalc(now, issuance.due_date),
+    //   );
+    // }
   }
 }

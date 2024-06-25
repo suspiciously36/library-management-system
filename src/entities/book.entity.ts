@@ -11,6 +11,7 @@ import {
 import { Author } from './author.entity';
 import { Category } from './category.entity';
 import { Transaction } from './transaction.entity';
+import { Reservation } from './reservation.entity';
 
 @Entity()
 export class Book {
@@ -58,4 +59,7 @@ export class Book {
 
   @OneToMany(() => Transaction, (transaction: Transaction) => transaction.book)
   transactions: Transaction[];
+
+  @OneToMany(() => Reservation, (reservation: Reservation) => reservation.book)
+  reservations: Reservation[];
 }
