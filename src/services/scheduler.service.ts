@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger, forwardRef } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { TransactionsService } from './transactions.service';
 import { CronJob } from 'cron';
 
