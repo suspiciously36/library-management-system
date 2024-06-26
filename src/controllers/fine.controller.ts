@@ -7,13 +7,16 @@ import {
   Param,
   Delete,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { FineService } from '../services/fine.service';
 import { CreateFineDto } from '../dto/fines/create-fine.dto';
 import { UpdateFineDto } from '../dto/fines/update-fine.dto';
 import { ResponseMessage } from '../common/decorators/responseMessage.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
 
 @Controller('api/v1/fine')
+@UseGuards(AuthGuard)
 export class FineController {
   constructor(private readonly fineService: FineService) {}
 

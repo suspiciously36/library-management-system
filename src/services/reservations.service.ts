@@ -11,6 +11,7 @@ import { BooksService } from './books.service';
 import { CustomerService } from './customer.service';
 import { Book } from '../entities/book.entity';
 import { NotificationsService } from './notifications.service';
+import { TransactionsService } from './transactions.service';
 
 @Injectable()
 export class ReservationsService {
@@ -22,6 +23,7 @@ export class ReservationsService {
     private bookService: BooksService,
     private customerService: CustomerService,
     private notificationService: NotificationsService,
+    private transactionService: TransactionsService,
   ) {}
   //CRUD
 
@@ -34,7 +36,9 @@ export class ReservationsService {
   }
 
   async findOneReservation(id: number) {
-    const reservation = await this.findOneReservation(id);
+    const reservation = await this.reservationRepository.findOneBy({ id });
+    console.log(reservation);
+
     if (!reservation) {
       throw new NotFoundException('Reservation not found.');
     }
@@ -93,10 +97,14 @@ export class ReservationsService {
       where: { id: reservation_id },
       relations: ['book', 'customer'],
     });
-    console.log(reservation);
 
     if (!reservation) {
       throw new NotFoundException('Reservation not found.');
+    }
+    if (reservation.is_fulfilled) {
+      throw new ConflictException(
+        'This reservation is already fulfilled, cannot cancel.',
+      );
     }
 
     reservation.book.copies_available += 1;
@@ -118,7 +126,27 @@ export class ReservationsService {
       throw new NotFoundException('Reservation not found.');
     }
 
+    if (reservation.is_fulfilled) {
+      throw new ConflictException('This reservation is already borrowed.');
+    }
+
     reservation.is_fulfilled = true;
+
+    reservation.book.copies_available += 1;
+    await this.booksRepository.save(reservation.book);
+    // +1 cause createIssue above already -1 book
+
+    const transactionData = {
+      book_id: reservation.book.id,
+      customer_id: reservation.customer.id,
+      issued_date: reservation.updated_at,
+      due_date: new Date(new Date().setDate(new Date().getDate() + 7)),
+    };
+
+    if (reservation.is_fulfilled) {
+      await this.transactionService.createIssueTransaction(transactionData);
+    }
+
     await this.notificationService.sendFulfillConfirmation(
       reservation.customer.email,
       reservation.book.title,
@@ -131,7 +159,6 @@ export class ReservationsService {
     const expiredReservations = await this.reservationRepository.find({
       where: { expire_at: LessThan(now), is_fulfilled: false },
     });
-    console.log(expiredReservations);
 
     for (const reservation of expiredReservations) {
       reservation.book.copies_available += 1;

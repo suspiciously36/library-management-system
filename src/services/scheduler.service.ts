@@ -53,6 +53,7 @@ export class SchedulerService {
     this.logger.log('Stopping the cron job...');
     this.transactionCronJob.stop();
     this.reservationCronJob.stop();
+    this.logger.log('Cron job stopped.');
   }
 
   // Method to start the cron job
