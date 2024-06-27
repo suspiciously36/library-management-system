@@ -14,7 +14,7 @@ import { CreateCustomerDto } from 'src/dto/customers/create-customer.dto';
 import { UpdateCustomerDto } from 'src/dto/customers/update-customer.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 
-@Controller('api/v1/customer')
+@Controller('api/v1/customers')
 @UseGuards(AuthGuard)
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}

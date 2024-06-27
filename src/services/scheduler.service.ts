@@ -15,13 +15,13 @@ export class SchedulerService {
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
   ) {
-    this.reservationCronJob = new CronJob('0 * * * *', async () => {
-      // EVERY_HOUR
+    this.reservationCronJob = new CronJob('0 7 * * *', async () => {
+      // EVERY_DAY_AT_7AM
       await this.handleReservationCron();
     });
 
-    this.transactionCronJob = new CronJob('0 * * * *', async () => {
-      // EVERY_HOUR
+    this.transactionCronJob = new CronJob('0 7 * * *', async () => {
+      // EVERY_DAY_AT_7AM
       await this.handleTransactionCron();
     });
 

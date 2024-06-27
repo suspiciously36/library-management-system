@@ -13,6 +13,12 @@ export class CreateAdminDto {
   @IsNotEmpty()
   password: string;
 
+  // @IsNotEmpty()
+  // @Matches(passwordRegEx, {
+  //   message: `Password must contain Minimum 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character`,
+  // })
+  // password: string;
+
   refresh_token: string;
 
   created_at: Date;

@@ -13,7 +13,6 @@ import { FineModule } from './modules/fine.module';
 import { NotificationsModule } from './modules/notifications.module';
 import { ReservationsModule } from './modules/reservations.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SchedulerController } from './controllers/scheduler.controller';
 import { SchedulerModule } from './modules/scheduler.module';
 
 @Module({
@@ -22,9 +21,9 @@ import { SchedulerModule } from './modules/scheduler.module';
       // type: 'postgres',
       // host: 'localhost',
       // port: 5432,
-      // password: 'Hiimtuankiet36',
+      // password: '************',
       // username: 'postgres',
-      // entities: [Customer, Book, Author, Category, Transaction, Admin],
+      // entities: [__dirname + '/**/*.entity{.ts,.js}'],
       // database: 'library_management_database',
       // synchronize: true,
       // logging: true,

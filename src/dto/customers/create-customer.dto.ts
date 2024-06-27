@@ -1,16 +1,4 @@
-import {
-  IsAlphanumeric,
-  IsEmail,
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MinLength,
-} from 'class-validator';
-
-// const passwordRegEx =
-//   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,}$/;
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class CreateCustomerDto {
   @IsString()
@@ -29,13 +17,7 @@ export class CreateCustomerDto {
   @IsString()
   address: string;
 
-  @IsString()
-  @IsEnum(['f', 'm', 'u'])
-  gender: string;
-
-  // @IsNotEmpty()
-  // @Matches(passwordRegEx, {
-  //   message: `Password must contain Minimum 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character`,
-  // })
-  // password: string;
+  // @IsString()
+  // @IsEnum(['f', 'm', 'u'])
+  // gender: string;
 }

@@ -12,10 +12,10 @@ import { NotificationsModule } from './notifications.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Transaction]),
-    BooksModule,
     forwardRef(() => CustomerModule),
     forwardRef(() => AdminsModule),
     forwardRef(() => ReservationsModule),
+    BooksModule,
     NotificationsModule,
   ],
   controllers: [TransactionsController],
