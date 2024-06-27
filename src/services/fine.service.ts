@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateFineDto } from '../dto/fines/create-fine.dto';
 import { UpdateFineDto } from '../dto/fines/update-fine.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,7 +12,7 @@ import { TransactionsService } from './transactions.service';
 import { dateTypeTransformer } from '../common/utils/dateType.transformer';
 import { NotificationsService } from './notifications.service';
 import { CustomerService } from './customer.service';
-
+import * as moment from 'moment';
 @Injectable()
 export class FineService {
   constructor(
@@ -23,6 +27,8 @@ export class FineService {
   async calculateFine(transaction_id: number): Promise<Fine> {
     const transaction =
       await this.transactionService.findOneTransaction(transaction_id);
+    console.log(transaction);
+
     if (!transaction) {
       throw new NotFoundException('Transaction not found.');
     }
@@ -32,19 +38,20 @@ export class FineService {
       );
     }
 
-    const dueDate = dateTypeTransformer(transaction.due_date);
-    const returnDate = dateTypeTransformer(transaction.return_date);
+    const dueDate = moment(transaction.due_date);
+    const returnDate = moment(transaction.return_date);
+
+    if (!returnDate.isValid()) {
+      throw new Error('Invalid or null return_date.');
+    }
 
     const fine = new Fine();
-    if (returnDate.getTime() > dueDate.getTime()) {
-      const numOfOverdueDays = Math.floor(
-        (returnDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
+    if (returnDate.isAfter(dueDate)) {
+      const numOfOverdueDays = returnDate.diff(dueDate, 'days');
       fine.overdue_days = numOfOverdueDays;
       fine.overdue_fee = fine.overdue_days * 10000; // 10k/day
       fine.customer_id = transaction.customer_id;
       fine.transaction_id = transaction.id;
-
       const customer = await this.customerService.findOneCustomer(
         fine.customer_id,
       );
@@ -69,7 +76,7 @@ export class FineService {
       throw new NotFoundException('Fine not found.');
     }
     if (fine.is_paid) {
-      throw new Error('Fine is already paid.');
+      throw new ConflictException('Fine is already paid.');
     }
 
     fine.is_paid = true;

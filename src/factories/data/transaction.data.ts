@@ -23,4 +23,10 @@ export const transactionData = [
     issued_date: new Date(2024, 5, 12),
     due_date: new Date(2024, 5, 19),
   },
+  {
+    book_id: 6,
+    customer_id: 3,
+    issued_date: new Date(2024, 5, 12),
+    due_date: new Date(2024, 5, 17),
+  },
 ];

@@ -17,4 +17,10 @@ export const reservationData = [
     expire_at: new Date(2024, 6, 14),
     is_fulfilled: false,
   },
+  {
+    customer_id: 2,
+    book_id: 6,
+    expire_at: new Date(2024, 6, 14),
+    is_fulfilled: false,
+  },
 ];

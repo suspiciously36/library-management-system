@@ -44,4 +44,13 @@ export const bookData = [
     total_copies: 7,
     publication_year: 2022,
   },
+  {
+    title: 'The ONE Thing',
+    author_id: 4,
+    category_id: 4,
+    isbn: '9781885167774',
+    copies_available: 2,
+    total_copies: 2,
+    publication_year: 2012,
+  },
 ];

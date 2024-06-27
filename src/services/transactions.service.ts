@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transaction.entity';
 import { LessThan, Repository } from 'typeorm';
@@ -9,6 +14,7 @@ import { BooksService } from './books.service';
 import { dateTypeTransformer } from '../common/utils/dateType.transformer';
 import { NotificationsService } from './notifications.service';
 import { numOfDaysCalc } from '../common/utils/calculateNumOfDays.util';
+import * as moment from 'moment';
 
 @Injectable()
 export class TransactionsService {
@@ -103,18 +109,36 @@ export class TransactionsService {
     const transaction = await this.findOneTransaction(+id);
 
     if (!transaction) {
-      throw new Error('There is no such transaction (:id)');
+      throw new ConflictException('There is no such transaction (:id)');
     }
 
     if (transaction.is_returned) {
-      throw new Error('This Transaction is already returned!');
+      throw new ConflictException('This Transaction is already returned!');
     }
 
-    const returnDate = dateTypeTransformer(returnData);
-    const dueDate = dateTypeTransformer(transaction.due_date);
+    let returnDate: moment.Moment;
 
-    transaction.return_date = returnDate;
-    transaction.due_date = dueDate;
+    if (typeof returnData === 'string') {
+      returnDate = moment(returnData, moment.ISO_8601, true);
+      if (!returnDate.isValid()) {
+        throw new BadRequestException(
+          'Invalid date format: must be in ISO 8601 format.',
+        );
+      }
+    } else if (returnData instanceof Date) {
+      returnDate = moment(returnData);
+    } else {
+      throw new BadRequestException('Invalid returnData format.');
+    }
+
+    const dueDate = moment(transaction.due_date);
+    const issuedDate = moment(transaction.issued_date);
+    if (returnDate.isBefore(issuedDate)) {
+      throw new ConflictException('Return Date cannot be before Issue Date');
+    }
+
+    transaction.return_date = returnDate.toDate();
+    transaction.due_date = dueDate.toDate();
     transaction.is_returned = true;
 
     await this.transactionRepository.save(transaction);

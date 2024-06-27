@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsNotEmpty } from 'class-validator';
+import { IsString, IsInt, IsNotEmpty, IsDate } from 'class-validator';
 import { PrimaryGeneratedColumn } from 'typeorm';
 import { Transform } from 'class-transformer';
 export class CreateTransactionDto {
@@ -23,5 +23,6 @@ export class CreateTransactionDto {
 
   is_returned: boolean;
 
+  @IsDate()
   return_date: Date;
 }

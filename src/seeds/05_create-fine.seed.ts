@@ -27,11 +27,8 @@ export default class CreateFine implements Seeder {
           }
 
           const dueDate = dateTypeTransformer(transaction.due_date);
-          const dueDateTS = Math.floor(dueDate.getTime());
-          const returnDate = new Date(
-            dueDateTS + fine.overdue_days * (1000 * 60 * 60 * 24),
-          );
-          transaction.return_date = returnDate;
+          const returnDate = dueDate.clone().add(fine.overdue_days, 'days');
+          transaction.return_date = returnDate.toDate();
           if (!fine.overdue_days) {
             transaction.return_date = transaction.due_date;
           }
