@@ -11,9 +11,7 @@ import { CustomerService } from './customer.service';
 import { UpdateTransactionDto } from 'src/dto/transactions/update-transaction.dto';
 import { CreateTransactionDto } from 'src/dto/transactions/create-transaction.dto';
 import { BooksService } from './books.service';
-import { dateTypeTransformer } from '../common/utils/dateType.transformer';
 import { NotificationsService } from './notifications.service';
-import { numOfDaysCalc } from '../common/utils/calculateNumOfDays.util';
 import * as moment from 'moment';
 
 @Injectable()
