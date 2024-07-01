@@ -13,6 +13,7 @@ import { CreateTransactionDto } from 'src/dto/transactions/create-transaction.dt
 import { BooksService } from './books.service';
 import { NotificationsService } from './notifications.service';
 import * as moment from 'moment';
+import { dateTypeChecker } from '../common/utils/dateTypeChecker.util';
 
 @Injectable()
 export class TransactionsService {
@@ -84,17 +85,12 @@ export class TransactionsService {
   ): Promise<Transaction> {
     const book = await this.booksService.findOneBook(transactionData.book_id);
 
-    const customer = await this.customerService.findOneCustomer(
-      transactionData.customer_id,
-    );
+    let dueDate = transactionData.due_date;
+    dateTypeChecker(dueDate);
 
     if (!book || book.copies_available < 1) {
-      throw new Error('There is no book available at the moment.');
+      throw new NotFoundException('There is no book available at the moment.');
     }
-
-    const transaction = this.transactionRepository.create(transactionData);
-    transaction.book_id = book.id;
-    transaction.customer_id = customer.id;
 
     await this.booksService.decreaseCopies(book.id);
     return this.transactionRepository.save(transactionData);
@@ -115,19 +111,7 @@ export class TransactionsService {
     }
 
     let returnDate: moment.Moment;
-
-    if (typeof returnData === 'string') {
-      returnDate = moment(returnData, moment.ISO_8601, true);
-      if (!returnDate.isValid()) {
-        throw new BadRequestException(
-          'Invalid date format: must be in ISO 8601 format.',
-        );
-      }
-    } else if (returnData instanceof Date) {
-      returnDate = moment(returnData);
-    } else {
-      throw new BadRequestException('Invalid returnData format.');
-    }
+    returnDate = dateTypeChecker(returnData);
 
     const dueDate = moment(transaction.due_date);
     const issuedDate = moment(transaction.issued_date);

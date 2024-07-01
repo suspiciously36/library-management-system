@@ -23,7 +23,7 @@ export class Transaction {
   @Column({ type: 'int' })
   customer_id: number;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', default: () => 'current_timestamp' })
   issued_date: Date;
 
   @Column({ type: 'date' })

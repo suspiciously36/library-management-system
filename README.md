@@ -70,5 +70,5 @@
 
     CRUD features for transactions table
 
-    POST: /issue - for customer to request a book issuance {body: {book_id, customer_id}}
-    POST: /return/:id - for customer to request a book return by {transaction_id}
+    POST: /issue - for customer to request a book issuance {body: {book_id, customer_id, due_date}}
+    PATCH: /return/:id - for customer to request a book return by {transaction_id}

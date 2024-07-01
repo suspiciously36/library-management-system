@@ -4,7 +4,7 @@ import { fineData } from '../factories/data/fine.data';
 import { Fine } from '../entities/fine.entity';
 import { Transaction } from '../entities/transaction.entity';
 import { Book } from '../entities/book.entity';
-import { dateTypeTransformer } from '../common/utils/dateType.transformer';
+import { dateTypeTransformer } from '../common/utils/dateTypeChecker.util';
 
 export default class CreateFine implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {

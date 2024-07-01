@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Fine } from '../entities/fine.entity';
 import { Repository } from 'typeorm';
 import { TransactionsService } from './transactions.service';
-import { dateTypeTransformer } from '../common/utils/dateType.transformer';
 import { NotificationsService } from './notifications.service';
 import { CustomerService } from './customer.service';
 import * as moment from 'moment';
@@ -52,6 +51,27 @@ export class FineService {
       fine.overdue_fee = fine.overdue_days * 10000; // 10k/day
       fine.customer_id = transaction.customer_id;
       fine.transaction_id = transaction.id;
+      const customer = await this.customerService.findOneCustomer(
+        fine.customer_id,
+      );
+
+      //Send notif mail
+      await this.notificationService.sendFineNotification(
+        customer.email,
+        fine.overdue_fee,
+      );
+      return this.fineRepository
+        .upsert([fine], ['transaction_id'])
+        .then((insertResult) => {
+          const id = insertResult.identifiers[0].id;
+          return this.fineRepository.findOneBy({ id: id });
+        });
+    } else {
+      fine.overdue_days = 0;
+      fine.overdue_fee = 0;
+      fine.customer_id = transaction.customer_id;
+      fine.transaction_id = transaction.id;
+
       const customer = await this.customerService.findOneCustomer(
         fine.customer_id,
       );
