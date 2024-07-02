@@ -10,6 +10,12 @@ export class NotificationsService {
     await this.mailerService.sendMail({ to, subject, text: content });
   }
 
+  async sendOnTimeNotification(to: string): Promise<void> {
+    const subject = 'Library Fine Notification';
+    const content = `You have return the book just on time, thank you for choosing us.`;
+    await this.mailerService.sendMail({ to, subject, text: content });
+  }
+
   async sendPaymentConfirmation(to: string, fine_fee: number): Promise<void> {
     const subject = 'Payment Confirmation';
     const content = `You have successfully paid ${fine_fee} of overdue fee. Thank you!`;

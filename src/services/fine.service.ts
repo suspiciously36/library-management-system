@@ -69,6 +69,7 @@ export class FineService {
     } else {
       fine.overdue_days = 0;
       fine.overdue_fee = 0;
+      fine.is_paid = true;
       fine.customer_id = transaction.customer_id;
       fine.transaction_id = transaction.id;
 
@@ -77,10 +78,7 @@ export class FineService {
       );
 
       //Send notif mail
-      await this.notificationService.sendFineNotification(
-        customer.email,
-        fine.overdue_fee,
-      );
+      await this.notificationService.sendOnTimeNotification(customer.email);
       return this.fineRepository
         .upsert([fine], ['transaction_id'])
         .then((insertResult) => {
