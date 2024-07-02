@@ -26,12 +26,14 @@ export class AdminsService {
         return this.adminsRepository.findOneBy({ id: insertAdminId });
       });
   }
-  async findAllAdmin(): Promise<Admin[]> {
-    const admins = this.adminsRepository.find();
-    if (!admins) {
+
+  async findAllAdmin(): Promise<{ admins: Admin[]; total: number }> {
+    const admins = await this.adminsRepository.find();
+    if (!admins || !admins.length) {
       throw new NotFoundException('Admins not found!');
     }
-    return admins;
+    const total = admins.length;
+    return { admins, total };
   }
 
   findOneUsername(username: string) {

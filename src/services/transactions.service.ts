@@ -7,13 +7,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transaction.entity';
 import { LessThan, Repository } from 'typeorm';
-import { CustomerService } from './customer.service';
 import { UpdateTransactionDto } from 'src/dto/transactions/update-transaction.dto';
 import { CreateTransactionDto } from 'src/dto/transactions/create-transaction.dto';
 import { BooksService } from './books.service';
 import { NotificationsService } from './notifications.service';
 import * as moment from 'moment';
 import { dateTypeChecker } from '../common/utils/dateTypeChecker.util';
+import { numOfDaysCalc } from '../common/utils/calculateNumOfDays.util';
 
 @Injectable()
 export class TransactionsService {
@@ -21,6 +21,7 @@ export class TransactionsService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     private booksService: BooksService,
+    private notificationService: NotificationsService,
   ) {}
 
   createTransaction(
@@ -35,12 +36,16 @@ export class TransactionsService {
     return this.transactionRepository.save(transaction);
   }
 
-  async findAllTransaction(): Promise<Transaction[]> {
+  async findAllTransaction(): Promise<{
+    transactions: Transaction[];
+    total: number;
+  }> {
     const transactions = await this.transactionRepository.find();
-    if (!transactions) {
+    if (!transactions || !transactions.length) {
       throw new NotFoundException('Transactions not found.');
     }
-    return transactions;
+    const total = transactions.length;
+    return { transactions, total };
   }
 
   async findOneTransaction(id: number) {
@@ -145,14 +150,14 @@ export class TransactionsService {
       relations: ['book', 'customer'],
     });
 
-    // MAILER DEMO: ACTIVATE THIS WILL SEND MAIL DEPENDS ON THE CRON EXPRESS
+    // MAILER DEMO: ACTIVATE THIS WILL SEND MAIL DEPENDS ON THE CRON EXPRESSION
 
-    // for (const issuance of overdueIssuance) {
-    //   await this.notificationService.sendOverdueNotification(
-    //     issuance.customer.email,
-    //     issuance.book.title,
-    //     numOfDaysCalc(now, issuance.due_date),
-    //   );
-    // }
+    for (const issuance of overdueIssuance) {
+      await this.notificationService.sendOverdueNotification(
+        issuance.customer.email,
+        issuance.book.title,
+        numOfDaysCalc(now, issuance.due_date),
+      );
+    }
   }
 }

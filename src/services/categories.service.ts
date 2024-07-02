@@ -17,12 +17,13 @@ export class CategoriesService {
     return this.categoryRepository.save(category);
   }
 
-  async findAllCategory(): Promise<Category[]> {
+  async findAllCategory(): Promise<{ categories: Category[]; total: number }> {
     const categories = await this.categoryRepository.find();
-    if (!categories) {
+    if (!categories || !categories.length) {
       throw new NotFoundException('Categories not found.');
     }
-    return categories;
+    const total = categories.length;
+    return { categories, total };
   }
 
   async findOneCategory(id: number) {

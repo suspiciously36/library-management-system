@@ -27,12 +27,13 @@ export class BooksService {
     return this.bookRepository.save(book);
   }
 
-  async findAllBook(): Promise<Book[]> {
+  async findAllBook(): Promise<{ books: Book[]; total: number }> {
     const books = await this.bookRepository.find();
-    if (!books) {
+    if (!books || !books.length) {
       throw new NotFoundException('Books not found.');
     }
-    return books;
+    const total = books.length;
+    return { books, total };
   }
 
   async findOneBook(id: number) {

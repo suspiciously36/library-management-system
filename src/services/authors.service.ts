@@ -17,12 +17,13 @@ export class AuthorsService {
     return this.authorRepository.save(author);
   }
 
-  async findAllAuthor(): Promise<Author[]> {
+  async findAllAuthor(): Promise<{ authors: Author[]; total: number }> {
     const authors = await this.authorRepository.find();
-    if (!authors) {
+    if (!authors || !authors.length) {
       throw new NotFoundException('Authors not found!');
     }
-    return authors;
+    const total = authors.length;
+    return { authors, total };
   }
 
   async findOneAuthor(id: number) {

@@ -126,12 +126,13 @@ export class FineService {
     return this.fineRepository.save(fine);
   }
 
-  async findAllFines() {
+  async findAllFines(): Promise<{ fines: Fine[]; total: number }> {
     const fines = await this.fineRepository.find();
-    if (!fines) {
+    if (!fines || !fines.length) {
       throw new NotFoundException('Fines not found');
     }
-    return fines;
+    const total = fines.length;
+    return { fines, total };
   }
 
   async findOneFine(id: number) {

@@ -30,12 +30,13 @@ export class CustomerService {
       });
   }
 
-  async findAllCustomer(): Promise<Customer[]> {
+  async findAllCustomer(): Promise<{ customers: Customer[]; total: number }> {
     const customers = await this.customerRepository.find();
-    if (!customers) {
+    if (!customers || !customers.length) {
       throw new NotFoundException('Customers not found.');
     }
-    return customers;
+    const total = customers.length;
+    return { customers, total };
   }
 
   async findOneCustomer(id: number) {

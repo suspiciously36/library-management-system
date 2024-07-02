@@ -27,12 +27,16 @@ export class ReservationsService {
   ) {}
   //CRUD
 
-  async findAllReservations() {
+  async findAllReservations(): Promise<{
+    reservations: Reservation[];
+    total: number;
+  }> {
     const reservations = await this.reservationRepository.find();
-    if (!reservations) {
+    if (!reservations || !reservations.length) {
       throw new NotFoundException('Reservations not found.');
     }
-    return reservations;
+    const total = reservations.length;
+    return { reservations, total };
   }
 
   async findOneReservation(id: number) {
