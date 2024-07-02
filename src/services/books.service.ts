@@ -27,8 +27,8 @@ export class BooksService {
     return this.bookRepository.save(book);
   }
 
-  findAllBook(): Promise<Book[]> {
-    const books = this.bookRepository.find();
+  async findAllBook(): Promise<Book[]> {
+    const books = await this.bookRepository.find();
     if (!books) {
       throw new NotFoundException('Books not found.');
     }

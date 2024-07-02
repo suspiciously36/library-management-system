@@ -26,7 +26,6 @@ export class FineService {
   async calculateFine(transaction_id: number): Promise<Fine> {
     const transaction =
       await this.transactionService.findOneTransaction(transaction_id);
-    console.log(transaction);
 
     if (!transaction) {
       throw new NotFoundException('Transaction not found.');

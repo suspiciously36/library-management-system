@@ -21,8 +21,6 @@ export class TransactionsService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     private booksService: BooksService,
-    private customerService: CustomerService,
-    private notificationService: NotificationsService,
   ) {}
 
   createTransaction(

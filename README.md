@@ -107,3 +107,5 @@
 
     POST: /issue - for customer to request a book issuance {body: {book_id, customer_id, due_date}}
     PATCH: /return/:id - for customer to request a book return by {transaction_id}
+
+Database tables diagram: https://dbdiagram.io/d/Library-Management-System-665fa307b65d933879840ec9

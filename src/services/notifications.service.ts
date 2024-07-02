@@ -41,7 +41,7 @@ export class NotificationsService {
     to: string,
     book_name: string,
   ): Promise<void> {
-    const subject = `Reservation cancelled.`;
+    const subject = `Reservation cancelled`;
     const content = `You have successfully cancel reservation of book named ${book_name}.`;
     await this.mailerService.sendMail({ to, subject, text: content });
   }
