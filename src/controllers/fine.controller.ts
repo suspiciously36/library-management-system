@@ -16,7 +16,7 @@ import { ResponseMessage } from '../common/decorators/responseMessage.decorator'
 import { AuthGuard } from '../common/guards/auth.guard';
 
 @Controller('api/v1/fine')
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class FineController {
   constructor(private readonly fineService: FineService) {}
 

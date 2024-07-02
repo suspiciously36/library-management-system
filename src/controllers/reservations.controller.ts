@@ -15,7 +15,7 @@ import { ResponseMessage } from '../common/decorators/responseMessage.decorator'
 import { AuthGuard } from '../common/guards/auth.guard';
 
 @Controller('api/v1/reservations')
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
@@ -40,18 +40,21 @@ export class ReservationsController {
     return this.reservationsService.fulfillReservation(+id);
   }
 
+  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Get()
   findAll() {
     return this.reservationsService.findAllReservations();
   }
 
+  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reservationsService.findOneReservation(+id);
   }
 
+  @UseGuards(AuthGuard)
   @ResponseMessage()
   @Patch(':id')
   update(

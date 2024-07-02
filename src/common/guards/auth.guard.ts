@@ -15,6 +15,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
+    // Debugging refresh path
     if (request.path === '/auth/refresh') {
       console.log('Skipping JWT guard for refresh endpoint');
       return true;

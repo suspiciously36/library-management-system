@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import { dateTypeTransformer } from './dateTypeChecker.util';
 
 export const numOfDaysCalc = (past: any, present: any) => {
