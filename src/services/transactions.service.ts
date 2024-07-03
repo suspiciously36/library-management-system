@@ -106,7 +106,7 @@ export class TransactionsService {
     const transaction = await this.findOneTransaction(+id);
 
     if (!transaction) {
-      throw new ConflictException('There is no such transaction (:id)');
+      throw new NotFoundException('Transaction not found');
     }
 
     if (transaction.is_returned) {

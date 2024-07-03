@@ -20,11 +20,16 @@ export class CustomerService {
     createCustomerDto: CreateCustomerDto,
   ): Promise<Customer> {
     const existingCustomer = this.customerRepository.findOne({
-      where: { email: createCustomerDto.email },
+      where: [
+        { email: createCustomerDto.email },
+        { phone: createCustomerDto.phone },
+      ],
     });
 
     if (existingCustomer) {
-      throw new ConflictException('Customer with this email already exists');
+      throw new ConflictException(
+        'Customer with this email/phone already exists',
+      );
     }
 
     const customer: Customer = new Customer();

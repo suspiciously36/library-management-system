@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Book } from '../entities/book.entity';
@@ -15,7 +19,13 @@ export class BooksService {
 
   // CRUD
 
-  createBook(createBookDto: CreateBookDto): Promise<Book> {
+  async createBook(createBookDto: CreateBookDto): Promise<Book> {
+    const existingBookTitle = await this.bookRepository.findOne({
+      where: { title: createBookDto.title },
+    });
+    if (existingBookTitle) {
+      throw new ConflictException('Book with this title already exists');
+    }
     const book: Book = new Book();
     book.title = createBookDto.title;
     book.copies_available = createBookDto.copies_available;

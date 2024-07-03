@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Author } from '../entities/author.entity';
 import { Repository } from 'typeorm';
@@ -11,7 +15,13 @@ export class AuthorsService {
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
   ) {}
-  createAuthor(createAuthorDto: CreateAuthorDto): Promise<Author> {
+  async createAuthor(createAuthorDto: CreateAuthorDto): Promise<Author> {
+    const existingAuthor = await this.authorRepository.findOne({
+      where: { name: createAuthorDto.name },
+    });
+    if (existingAuthor) {
+      throw new ConflictException('Author with this name already exists');
+    }
     const author: Author = new Author();
     author.name = createAuthorDto.name;
     return this.authorRepository.save(author);

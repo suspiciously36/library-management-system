@@ -36,7 +36,7 @@ export class NotificationsService {
     book_name: string,
   ): Promise<void> {
     const subject = `Reservation expired`;
-    const content = `Your reservation of book named ${book_name} is expired after 7 days, if you want to make a reservation again, please wait after 3 days from today.`;
+    const content = `Your reservation of book named ${book_name} is expired after 7 days, if you want to make a reservation again, please wait 3 more days from today.`;
     await this.mailerService.sendMail({ to, subject, text: content });
   }
 
