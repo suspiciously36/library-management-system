@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Unique } from 'typeorm';
 import { Admin } from '../entities/admin.entity';
@@ -14,17 +18,28 @@ export class AdminsService {
     private readonly adminsRepository: Repository<Admin>,
   ) {}
   async findOrCreateAdmin(createAdminDto: CreateAdminDto): Promise<Admin> {
+    const existingAdmin = this.adminsRepository.findOne({
+      where: [
+        {
+          email: createAdminDto.email,
+        },
+        {
+          username: createAdminDto.username,
+        },
+      ],
+    });
+
+    if (existingAdmin) {
+      throw new ConflictException(
+        'Admin with this username/email already exists',
+      );
+    }
     const admin: Admin = new Admin();
     admin.email = createAdminDto.email;
     admin.password = bcrypt.hashSync(createAdminDto.password, 10);
     admin.username = createAdminDto.username;
 
-    return await this.adminsRepository
-      .upsert([admin], { conflictPaths: ['email', 'username'] })
-      .then(async (insertResult) => {
-        const insertAdminId = insertResult.identifiers[0].id;
-        return this.adminsRepository.findOneBy({ id: insertAdminId });
-      });
+    return this.adminsRepository.save(admin);
   }
 
   async findAllAdmin(): Promise<{ admins: Admin[]; total: number }> {

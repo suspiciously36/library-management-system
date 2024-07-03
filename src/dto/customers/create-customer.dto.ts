@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class CreateCustomerDto {
   @IsString()
@@ -16,6 +22,9 @@ export class CreateCustomerDto {
 
   @IsString()
   address: string;
+
+  @IsInt()
+  reservation_cooldown_timestamp: number;
 
   // @IsString()
   // @IsEnum(['f', 'm', 'u'])

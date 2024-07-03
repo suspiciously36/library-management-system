@@ -12,7 +12,7 @@
 
 # /admins
 
-    CRUD features for admins table:
+    CRUD features for admins table: (Guarded)
     POST: /add - Add new admin to system
     GET: / - Get all admins
     GET: /:id - Get admin by {id}
@@ -27,35 +27,35 @@
 # /authors
 
     CRUD features for authors table:
-    POST: /add - Add new author to system
+    POST: /add - Add new author to system (Guarded)
     GET: / - Get all authors
     GET: /:id - Get author by {id}
-    PATCH: /:id - Update author by {id}
-    DELETE: /:id - Delete author by {id}
+    PATCH: /:id - Update author by {id} (Guarded)
+    DELETE: /:id - Delete author by {id} (Guarded)
 
 # /books
 
     CRUD features for books table:
-    POST: /add - Add new book to system
+    POST: /add - Add new book to system (Guarded)
     GET: / - Get all books
     GET: /:id - Get book by {id}
-    PATCH: /:id - Update book by {id}
-    DELETE: /:id - Delete book by {id}
+    PATCH: /:id - Update book by {id} (Guarded)
+    DELETE: /:id - Delete book by {id} (Guarded)
 
     GET: /search? - search books by title/author/category/availability
 
 # /categories
 
     CRUD features for categories table:
-    POST: /add - Add new category to system
+    POST: /add - Add new category to system (Guarded)
     GET: / - Get all categories
     GET: /:id - Get category by {id}
-    PATCH: /:id - Update category by {id}
-    DELETE: /:id - Delete category by {id}
+    PATCH: /:id - Update category by {id} (Guarded)
+    DELETE: /:id - Delete category by {id} (Guarded)
 
 # /customers
 
-    CRUD features for customers table
+    CRUD features for customers table: (Guarded)
     POST: /add - Add new customer to system
     GET: / - Get all customers
     GET: /:id - Get customer by {id}
@@ -64,7 +64,7 @@
 
 # /fine
 
-    CRUD features for fine table:
+    CRUD features for fine table: (Guarded)
     POST: /add - Add new fine to system
     GET: / - Get all fines
     GET: /:id - Get fine by {id}
@@ -76,7 +76,7 @@
 
 # /reservations
 
-    CRUD features for reservations table:
+    CRUD features for reservations table: (Guarded)
     POST: /add - Add new reservation to system
     GET: / - Get all reservations
     GET: /:id - Get reservation by {id}
@@ -88,17 +88,18 @@
 
 # /scheduler
 
-    Cron job for reservations and transactions checking (EVERY_DAY_AT_7AM)
+    Cron job for reservations and transactions checking (EVERY_DAY_AT_7AM) (Guarded)
 
     - Check the transactions table if the book is returned before due_date (overdue), if not, send mail notification to customer with fine information
     - Check the reservation table if the book is fulfilled (borrowed) before expiration, if not, send mail notification to customer
+    - Check the reservation table if customer's book reserved is expired, if expired, send mail notification to customer and set the penalty timer for that customer's next book reservation (3 days)
 
       POST: /start - start the cron job
       POST: /stop - stop the cron job
 
 # /transactions
 
-    CRUD features for transactions table:
+    CRUD features for transactions table: (Guarded)
     POST: /add - Add new transaction to system
     GET: / - Get all transactions
     GET: /:id - Get transaction by {id}

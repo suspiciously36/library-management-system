@@ -9,5 +9,7 @@ define(Customer, (_, context: { index: number }) => {
     (customer.email = customerData[context.index].email),
     (customer.address = customerData[context.index].address),
     (customer.phone = customerData[context.index].phone);
+  customer.reservation_cooldown_timestamp =
+    customerData[context.index].reservation_cooldown_timestamp;
   return customer;
 });

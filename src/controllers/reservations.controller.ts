@@ -21,7 +21,7 @@ export class ReservationsController {
 
   @ResponseMessage()
   @Post('create')
-  create(
+  async create(
     @Body('book_id') book_id: number,
     @Body('customer_id') customer_id: number,
   ): Promise<Reservation> {

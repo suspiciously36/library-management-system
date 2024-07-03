@@ -27,13 +27,18 @@ export class FineService {
     const transaction =
       await this.transactionService.findOneTransaction(transaction_id);
 
+    const calculatedFine = this.fineRepository.findOne({
+      where: { transaction_id: transaction.id },
+    });
+    if (calculatedFine) {
+      throw new ConflictException('This fine is already calculated');
+    }
+
     if (!transaction) {
-      throw new NotFoundException('Transaction not found.');
+      throw new NotFoundException('Transaction not found');
     }
     if (!transaction.is_returned) {
-      throw new Error(
-        'Transaction is not returned yet, cannot calculate fine.',
-      );
+      throw new Error('Transaction is not returned yet, cannot calculate fine');
     }
 
     const dueDate = moment(transaction.due_date);
@@ -59,12 +64,7 @@ export class FineService {
         customer.email,
         fine.overdue_fee,
       );
-      return this.fineRepository
-        .upsert([fine], ['transaction_id'])
-        .then((insertResult) => {
-          const id = insertResult.identifiers[0].id;
-          return this.fineRepository.findOneBy({ id: id });
-        });
+      return this.fineRepository.save(fine);
     } else {
       fine.overdue_days = 0;
       fine.overdue_fee = 0;
@@ -78,12 +78,7 @@ export class FineService {
 
       //Send notif mail
       await this.notificationService.sendOnTimeNotification(customer.email);
-      return this.fineRepository
-        .upsert([fine], ['transaction_id'])
-        .then((insertResult) => {
-          const id = insertResult.identifiers[0].id;
-          return this.fineRepository.findOneBy({ id: id });
-        });
+      return this.fineRepository.save(fine);
     }
   }
 
@@ -108,12 +103,7 @@ export class FineService {
       fine.overdue_fee,
     );
 
-    return this.fineRepository
-      .upsert([fine], ['transaction_id'])
-      .then((insertResult) => {
-        const id = insertResult.identifiers[0].id;
-        return this.fineRepository.findOneBy({ id: id });
-      });
+    return this.fineRepository.save(fine);
   }
 
   // CRUD
@@ -123,6 +113,7 @@ export class FineService {
     fine.transaction_id = createFineDto.transaction_id;
     fine.overdue_days = createFineDto.overdue_days;
     fine.overdue_fee = createFineDto.overdue_fee;
+    fine.is_paid = createFineDto.is_paid;
     return this.fineRepository.save(fine);
   }
 
@@ -152,6 +143,7 @@ export class FineService {
     fine.transaction_id = updateFineDto.transaction_id;
     fine.overdue_days = updateFineDto.overdue_days;
     fine.overdue_fee = updateFineDto.overdue_fee;
+    fine.is_paid = updateFineDto.is_paid;
     return this.fineRepository.save(fine);
   }
 

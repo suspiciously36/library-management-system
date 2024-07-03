@@ -27,6 +27,9 @@ export class Customer {
   @Column({ type: 'varchar' })
   address: string;
 
+  @Column({ type: 'int', nullable: true, default: 0 })
+  reservation_cooldown_timestamp: number;
+
   // @Column({ type: 'enum', enum: ['m', 'f', 'u'] })
   // gender: string;
 

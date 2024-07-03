@@ -31,6 +31,15 @@ export class NotificationsService {
     await this.mailerService.sendMail({ to, subject, text: content });
   }
 
+  async sendExpiredReservationNotification(
+    to: string,
+    book_name: string,
+  ): Promise<void> {
+    const subject = `Reservation expired`;
+    const content = `Your reservation of book named ${book_name} is expired after 7 days, if you want to make a reservation again, please wait after 3 days from today.`;
+    await this.mailerService.sendMail({ to, subject, text: content });
+  }
+
   async sendFulfillConfirmation(to: string, book_name: string): Promise<void> {
     const subject = `Book Borrowed`;
     const content = `You have successfully borrowed book named ${book_name} from the library. Thank you.`;

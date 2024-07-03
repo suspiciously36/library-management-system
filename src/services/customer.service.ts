@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Customer } from '../entities/customer.entity';
@@ -15,19 +19,24 @@ export class CustomerService {
   async findOrCreateCustomer(
     createCustomerDto: CreateCustomerDto,
   ): Promise<Customer> {
+    const existingCustomer = this.customerRepository.findOne({
+      where: { email: createCustomerDto.email },
+    });
+
+    if (existingCustomer) {
+      throw new ConflictException('Customer with this email already exists');
+    }
+
     const customer: Customer = new Customer();
     customer.name = createCustomerDto.name;
     customer.phone = createCustomerDto.phone;
     customer.address = createCustomerDto.address;
     customer.email = createCustomerDto.email;
+    customer.reservation_cooldown_timestamp =
+      createCustomerDto.reservation_cooldown_timestamp;
     // customer.gender = createCustomerDto.gender;
 
-    return this.customerRepository
-      .upsert([customer], ['email'])
-      .then((insertResult) => {
-        const insertedCustomerId = insertResult.identifiers[0].id;
-        return this.customerRepository.findOneBy(insertedCustomerId);
-      });
+    return this.customerRepository.save(customer);
   }
 
   async findAllCustomer(): Promise<{ customers: Customer[]; total: number }> {
@@ -60,6 +69,8 @@ export class CustomerService {
     customer.phone = updateCustomerDto.phone;
     customer.address = updateCustomerDto.address;
     customer.email = updateCustomerDto.email;
+    customer.reservation_cooldown_timestamp =
+      customer.reservation_cooldown_timestamp;
     return this.customerRepository.save(customer);
   }
 

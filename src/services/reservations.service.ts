@@ -12,6 +12,7 @@ import { CustomerService } from './customer.service';
 import { Book } from '../entities/book.entity';
 import { NotificationsService } from './notifications.service';
 import { TransactionsService } from './transactions.service';
+import { Customer } from '../entities/customer.entity';
 
 @Injectable()
 export class ReservationsService {
@@ -20,6 +21,8 @@ export class ReservationsService {
     private readonly reservationRepository: Repository<Reservation>,
     @InjectRepository(Book)
     private readonly booksRepository: Repository<Book>,
+    @InjectRepository(Customer)
+    private readonly customersRepository: Repository<Customer>,
     private bookService: BooksService,
     private customerService: CustomerService,
     private notificationService: NotificationsService,
@@ -68,6 +71,21 @@ export class ReservationsService {
     book_id: number,
     customer_id: number,
   ): Promise<Reservation> {
+    // Handle Reservation cooldown
+    const penaltyCustomer = await this.customersRepository.findOne({
+      where: {
+        id: customer_id,
+        reservation_cooldown_timestamp: MoreThan(new Date().getTime()),
+      },
+    });
+
+    if (penaltyCustomer) {
+      throw new ConflictException(
+        'This customer cannot make a book reservation due to cooldown penalty for last reservation expiration',
+      );
+    }
+
+    // Handle normal Reservation
     const book = await this.bookService.findOneBook(book_id);
 
     const customer = await this.customerService.findOneCustomer(customer_id);
@@ -162,12 +180,20 @@ export class ReservationsService {
     const now = new Date();
     const expiredReservations = await this.reservationRepository.find({
       where: { expire_at: LessThan(now), is_fulfilled: false },
+      relations: ['book', 'customer'],
     });
 
     for (const reservation of expiredReservations) {
       reservation.book.copies_available += 1;
+      reservation.customer.reservation_cooldown_timestamp =
+        now.getTime() + 3 * 24 * 60 * 60 * 1000;
       await this.booksRepository.save(reservation.book);
+      await this.customersRepository.save(reservation.customer);
       await this.reservationRepository.remove(reservation);
+      await this.notificationService.sendExpiredReservationNotification(
+        reservation.customer.email,
+        reservation.book.title,
+      );
     }
   }
 }

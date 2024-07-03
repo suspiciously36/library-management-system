@@ -9,10 +9,11 @@ import { Book } from '../entities/book.entity';
 import { NotificationsModule } from './notifications.module';
 import { TransactionsModule } from './transactions.module';
 import { SchedulerModule } from './scheduler.module';
+import { Customer } from '../entities/customer.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Reservation, Book]),
+    TypeOrmModule.forFeature([Reservation, Book, Customer]),
     forwardRef(() => BooksModule),
     forwardRef(() => CustomerModule),
     forwardRef(() => TransactionsModule),

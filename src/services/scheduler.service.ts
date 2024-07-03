@@ -6,7 +6,7 @@ import { CronJob } from 'cron';
 @Injectable()
 export class SchedulerService {
   private readonly logger = new Logger(SchedulerService.name);
-  private reservationCronJob: CronJob;
+  private reservationExpireCronJob: CronJob;
   private transactionCronJob: CronJob;
 
   constructor(
@@ -15,13 +15,13 @@ export class SchedulerService {
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionService: TransactionsService,
   ) {
-    this.reservationCronJob = new CronJob('0 7 * * *', async () => {
-      // EVERY_DAY_AT_7AM
-      await this.handleReservationCron();
+    // EVERY_DAY_AT_7AM
+    this.reservationExpireCronJob = new CronJob('0 7 * * *', async () => {
+      await this.handleReservationExpireCron();
     });
 
+    // EVERY_DAY_AT_7AM
     this.transactionCronJob = new CronJob('0 7 * * *', async () => {
-      // EVERY_DAY_AT_7AM
       await this.handleTransactionCron();
     });
 
@@ -29,7 +29,7 @@ export class SchedulerService {
     // this.cronJob.start();
   }
 
-  async handleReservationCron() {
+  async handleReservationExpireCron() {
     this.logger.log('Checking for expired reservations...');
     try {
       await this.reservationService.checkExpiredReservations();
@@ -52,7 +52,7 @@ export class SchedulerService {
   stopCronJob() {
     this.logger.log('Stopping the cron job...');
     this.transactionCronJob.stop();
-    this.reservationCronJob.stop();
+    this.reservationExpireCronJob.stop();
     this.logger.log('Cron job stopped.');
   }
 
@@ -60,6 +60,6 @@ export class SchedulerService {
   startCronJob() {
     this.logger.log('Starting the cron job...');
     this.transactionCronJob.start();
-    this.reservationCronJob.start();
+    this.reservationExpireCronJob.start();
   }
 }
