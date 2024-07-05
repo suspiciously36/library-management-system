@@ -4,14 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Unique } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Admin } from '../entities/admin.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateAdminDto } from 'src/dto/admins/create-admin.dto';
 import { UpdateAdminDto } from 'src/dto/admins/update-admin.dto';
 
 @Injectable()
-@Unique('upsert_unique', ['email', 'username'])
 export class AdminsService {
   constructor(
     @InjectRepository(Admin)

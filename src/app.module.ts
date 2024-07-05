@@ -14,24 +14,20 @@ import { NotificationsModule } from './modules/notifications.module';
 import { ReservationsModule } from './modules/reservations.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulerModule } from './modules/scheduler.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      // type: 'postgres',
-      // host: 'localhost',
-      // port: 5432,
-      // password: '************',
-      // username: 'postgres',
-      // entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      // database: 'library_management_database',
-      // synchronize: true,
-      // logging: true,
-      type: 'sqlite',
-      database: 'db/sql',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      logging: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        type: configService.get<'sqlite'>('database.type'),
+        database: configService.get<string>('database.database'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        logging: true,
+        synchronize: true,
+      }),
+      inject: [ConfigService],
     }),
     CustomerModule,
     BooksModule,
@@ -43,8 +39,9 @@ import { SchedulerModule } from './modules/scheduler.module';
     FineModule,
     NotificationsModule,
     ReservationsModule,
-    ScheduleModule.forRoot(),
     SchedulerModule,
+    ScheduleModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
   ],
   controllers: [AppController],
   providers: [AppService],

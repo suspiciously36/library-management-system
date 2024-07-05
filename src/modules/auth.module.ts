@@ -11,7 +11,8 @@ import { Admin } from '../entities/admin.entity';
   imports: [
     JwtModule.register({
       global: true,
-      secret: jwtConstants.secret,
+      // secret: jwtConstants.secret,
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '30m' },
     }),
     AdminsModule,
