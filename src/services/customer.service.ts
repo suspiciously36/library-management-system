@@ -19,7 +19,7 @@ export class CustomerService {
   async findOrCreateCustomer(
     createCustomerDto: CreateCustomerDto,
   ): Promise<Customer> {
-    const existingCustomer = this.customerRepository.findOne({
+    const existingCustomer = await this.customerRepository.findOne({
       where: [
         { email: createCustomerDto.email },
         { phone: createCustomerDto.phone },

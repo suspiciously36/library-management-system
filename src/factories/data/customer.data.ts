@@ -19,6 +19,6 @@ export const customerData = [
     email: '082.hoangtuankiet@gmail.com',
     address: '195 Cau Giay',
     phone: '0868906082',
-    reservation_cooldown_timestamp: new Date().getTime() + 5 * 60 * 1000,
+    reservation_cooldown_timestamp: new Date().getTime() + 20 * 60 * 1000,
   },
 ];

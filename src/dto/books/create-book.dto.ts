@@ -5,7 +5,7 @@ export class CreateBookDto {
   @IsNotEmpty()
   title: string;
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
   isbn: string;
 

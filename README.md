@@ -13,10 +13,10 @@
 # /admins
 
     CRUD features for admins table: (Guarded)
-    POST: /add - Add new admin to system
+    POST: /add - Add new admin to system {body: {email, username, password}}
     GET: / - Get all admins
     GET: /:id - Get admin by {id}
-    PATCH: /:id - Update admin by {id}
+    PATCH: /:id - Update admin by {id} {body: {...}}
     DELETE: /:id - Delete admin by {id}
 
 # /auth
@@ -27,19 +27,19 @@
 # /authors
 
     CRUD features for authors table:
-    POST: /add - Add new author to system (Guarded)
+    POST: /add - Add new author to system (Guarded) {body: {name}}
     GET: / - Get all authors
     GET: /:id - Get author by {id}
-    PATCH: /:id - Update author by {id} (Guarded)
+    PATCH: /:id - Update author by {id} (Guarded) {body: {body}}
     DELETE: /:id - Delete author by {id} (Guarded)
 
 # /books
 
     CRUD features for books table:
-    POST: /add - Add new book to system (Guarded)
+    POST: /add - Add new book to system (Guarded) {body: {title, author_id, category_id, copies_available, total_copies, isbn, publication_year}}
     GET: / - Get all books
     GET: /:id - Get book by {id}
-    PATCH: /:id - Update book by {id} (Guarded)
+    PATCH: /:id - Update book by {id} (Guarded) {body: {...}}
     DELETE: /:id - Delete book by {id} (Guarded)
 
     GET: /search? - search books by title/author/category/availability
@@ -47,28 +47,27 @@
 # /categories
 
     CRUD features for categories table:
-    POST: /add - Add new category to system (Guarded)
+    POST: /add - Add new category to system (Guarded) {body: {name}}
     GET: / - Get all categories
     GET: /:id - Get category by {id}
-    PATCH: /:id - Update category by {id} (Guarded)
+    PATCH: /:id - Update category by {id} (Guarded) {body: {name}}
     DELETE: /:id - Delete category by {id} (Guarded)
 
 # /customers
 
     CRUD features for customers table: (Guarded)
-    POST: /add - Add new customer to system
+    POST: /add - Add new customer to system {body: {name, phone, email, address}}
     GET: / - Get all customers
     GET: /:id - Get customer by {id}
-    PATCH: /:id - Update customer by {id}
+    PATCH: /:id - Update customer by {id} {body: {...}}
     DELETE: /:id - Delete customer by {id}
 
 # /fine
 
     CRUD features for fine table: (Guarded)
-    POST: /add - Add new fine to system
     GET: / - Get all fines
     GET: /:id - Get fine by {id}
-    PATCH: /:id - Update fine by {id}
+    PATCH: /:id - Update fine by {id} {body: {overdue_days, overdue_fee, is_paid}}
     DELETE: /:id - Delete fine by {id}
 
     POST: /calculate/:transaction_id - calculate fine details for transaction by {transaction_id}
@@ -77,12 +76,11 @@
 # /reservations
 
     CRUD features for reservations table: (Guarded)
-    POST: /add - Add new reservation to system
     GET: / - Get all reservations
     GET: /:id - Get reservation by {id}
-    PATCH: /:id - Update reservation by {id}
+    PATCH: /:id - Update reservation by {id} {body: {customer_id, book_id, is_fulfilled}}
 
-    POST: /create - create new book reservation for customer {body: {book_id, customer_id, due_date}}
+    POST: /create - create new book reservation for customer {body: {book_id, customer_id}}
     DELETE: /cancel/:id - cancel book reservation by {reservation_id}
     PATCH: /fulfill/:id - update book reservation to be fulfilled (Book borrowed by user - Update data to transactions table)
 
@@ -100,7 +98,7 @@
 # /transactions
 
     CRUD features for transactions table: (Guarded)
-    POST: /add - Add new transaction to system
+    POST: /add - Add new transaction to system {body: {book_id, customer_id, issued_date, due_date}}
     GET: / - Get all transactions
     GET: /:id - Get transaction by {id}
     PATCH: /:id - Update transaction by {id}

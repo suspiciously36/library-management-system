@@ -44,7 +44,6 @@ export class ReservationsService {
 
   async findOneReservation(id: number) {
     const reservation = await this.reservationRepository.findOneBy({ id });
-    console.log(reservation);
 
     if (!reservation) {
       throw new NotFoundException('Reservation not found.');
@@ -60,6 +59,21 @@ export class ReservationsService {
     if (!reservation) {
       throw new NotFoundException('Reservation not found.');
     }
+
+    const customer = await this.customersRepository.findOne({
+      where: { id: updateReservationDto.customer_id },
+    });
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const book = await this.booksRepository.findOne({
+      where: { id: updateReservationDto.book_id },
+    });
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+
     reservation.customer_id = updateReservationDto.customer_id;
     reservation.book_id = updateReservationDto.book_id;
     reservation.is_fulfilled = updateReservationDto.is_fulfilled;
@@ -81,7 +95,7 @@ export class ReservationsService {
 
     if (penaltyCustomer) {
       throw new ConflictException(
-        'This customer cannot make a book reservation due to cooldown penalty for last reservation expiration',
+        'This customer was unable to make a reservation due to a waiting time penalty since the previous reservation expired',
       );
     }
 
@@ -109,7 +123,7 @@ export class ReservationsService {
       return await this.reservationRepository.save(reservation);
     } else {
       throw new ConflictException(
-        'All copies of the books are already reserved.',
+        'All copies of the book are already reserved.',
       );
     }
   }

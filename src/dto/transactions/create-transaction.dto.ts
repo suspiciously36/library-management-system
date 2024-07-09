@@ -23,6 +23,5 @@ export class CreateTransactionDto {
 
   is_returned: boolean;
 
-  @IsDate()
   return_date: Date;
 }

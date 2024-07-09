@@ -19,6 +19,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
+  @ResponseMessage()
   @Post('add')
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.customerService.findOrCreateCustomer(createCustomerDto);

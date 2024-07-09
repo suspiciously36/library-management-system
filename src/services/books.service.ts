@@ -62,6 +62,7 @@ export class BooksService {
     }
     book.title = updateBookDto.title;
     book.author_id = updateBookDto.author_id;
+    book.category_id = updateBookDto.category_id;
     book.copies_available = updateBookDto.copies_available;
     book.total_copies = updateBookDto.total_copies;
     book.isbn = updateBookDto.isbn;

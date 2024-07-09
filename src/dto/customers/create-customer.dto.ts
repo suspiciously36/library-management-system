@@ -3,8 +3,10 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  Matches,
   MinLength,
 } from 'class-validator';
+import { phoneRegEx } from '../../common/utils/regex';
 
 export class CreateCustomerDto {
   @IsString()
@@ -14,6 +16,9 @@ export class CreateCustomerDto {
 
   @IsNotEmpty()
   @IsString()
+  @Matches(phoneRegEx, {
+    message: 'Phone must not contain word',
+  })
   phone: string;
 
   @IsNotEmpty()
@@ -23,7 +28,6 @@ export class CreateCustomerDto {
   @IsString()
   address: string;
 
-  @IsInt()
   reservation_cooldown_timestamp: number;
 
   // @IsString()

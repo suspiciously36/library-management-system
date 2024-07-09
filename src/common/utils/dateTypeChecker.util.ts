@@ -10,6 +10,11 @@ export const dateTypeTransformer = (obj: any): moment.Moment => {
 };
 
 export const dateTypeChecker = (data: any) => {
+  // Ignore data that is not input in PATCH method
+  if (data === undefined || data === null) {
+    return;
+  }
+
   let date: moment.Moment;
   if (typeof data === 'string') {
     date = moment(data, moment.ISO_8601, true);

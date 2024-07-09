@@ -42,26 +42,25 @@ export class FineController {
     }
   }
 
-  @Post('add')
-  create(@Body() createFineDto: CreateFineDto) {
-    return this.fineService.createFine(createFineDto);
-  }
-
+  @ResponseMessage()
   @Get()
   findAll() {
     return this.fineService.findAllFines();
   }
 
+  @ResponseMessage()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.fineService.findOneFine(+id);
   }
 
+  @ResponseMessage()
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFineDto: UpdateFineDto) {
     return this.fineService.updateFine(+id, updateFineDto);
   }
 
+  @ResponseMessage()
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.fineService.removeFine(+id);

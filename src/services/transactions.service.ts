@@ -14,25 +14,70 @@ import { NotificationsService } from './notifications.service';
 import * as moment from 'moment';
 import { dateTypeChecker } from '../common/utils/dateTypeChecker.util';
 import { numOfDaysCalc } from '../common/utils/calculateNumOfDays.util';
+import { Book } from '../entities/book.entity';
+import { Customer } from '../entities/customer.entity';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
     private booksService: BooksService,
     private notificationService: NotificationsService,
   ) {}
 
-  createTransaction(
+  async createTransaction(
     createTransactionDto: CreateTransactionDto,
   ): Promise<Transaction> {
+    const book = await this.bookRepository.findOne({
+      where: { id: createTransactionDto.book_id },
+    });
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    const customer = await this.customerRepository.findOne({
+      where: { id: createTransactionDto.customer_id },
+    });
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+    // Validating date type
+    let returnDate: moment.Moment;
+    returnDate = dateTypeChecker(createTransactionDto.return_date);
+    let issuedDate: moment.Moment;
+    issuedDate = dateTypeChecker(createTransactionDto.issued_date);
+    let dueDate: moment.Moment;
+    dueDate = dateTypeChecker(createTransactionDto.due_date);
+
     const transaction: Transaction = new Transaction();
+
+    if (returnDate) {
+      if (returnDate.isBefore(createTransactionDto.issued_date)) {
+        throw new ConflictException('Return Date cannot be before Issue Date');
+      }
+    }
+
+    if (dueDate.isBefore(createTransactionDto.issued_date)) {
+      throw new ConflictException('Due Date cannot be before Issue Date');
+    }
+
     transaction.book_id = createTransactionDto.book_id;
     transaction.customer_id = createTransactionDto.customer_id;
     transaction.due_date = createTransactionDto.due_date;
     transaction.issued_date = createTransactionDto.issued_date;
     transaction.return_date = createTransactionDto.return_date;
+
+    if (book.copies_available > 0) {
+      book.copies_available -= 1;
+    } else
+      throw new ConflictException(
+        'There is no book available right now to create a new transaction',
+      );
+    await this.bookRepository.save(book);
     return this.transactionRepository.save(transaction);
   }
 
@@ -60,16 +105,72 @@ export class TransactionsService {
     id: number,
     updateTransactionDto: UpdateTransactionDto,
   ): Promise<Transaction> {
+    const book = await this.bookRepository.findOne({
+      where: { id: updateTransactionDto.book_id },
+    });
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    const customer = await this.customerRepository.findOne({
+      where: { id: updateTransactionDto.customer_id },
+    });
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    // Validating date type
+    let returnDate: moment.Moment;
+    returnDate = dateTypeChecker(updateTransactionDto.return_date);
+    let issuedDate: moment.Moment;
+    issuedDate = dateTypeChecker(updateTransactionDto.issued_date);
+    let dueDate: moment.Moment;
+    dueDate = dateTypeChecker(updateTransactionDto.due_date);
+
     const transaction = await this.transactionRepository.findOneBy({ id });
     if (!transaction) {
       throw new NotFoundException('Transaction not found.');
     }
+
+    if (returnDate) {
+      if (returnDate.isBefore(transaction.issued_date)) {
+        throw new ConflictException('Return Date cannot be before Issue Date');
+      }
+    }
+
+    if (dueDate) {
+      if (dueDate.isBefore(transaction.issued_date)) {
+        throw new ConflictException('Due Date cannot be before Issue Date');
+      }
+    }
+
+    console.log(transaction.is_returned);
+    console.log(updateTransactionDto.is_returned);
+
+    if (!transaction.is_returned) {
+      if (updateTransactionDto.is_returned) {
+        if (!updateTransactionDto.return_date) {
+          throw new ConflictException(
+            'If is_returned set to true, a return_date must be provided',
+          );
+        }
+        book.copies_available += 1;
+        await this.bookRepository.save(book);
+      }
+    } else {
+      if (!updateTransactionDto.is_returned) {
+        transaction.return_date = null;
+        book.copies_available -= 1;
+        await this.bookRepository.save(book);
+      }
+    }
+
     transaction.book_id = updateTransactionDto.book_id;
     transaction.customer_id = updateTransactionDto.customer_id;
     transaction.due_date = updateTransactionDto.due_date;
     transaction.issued_date = updateTransactionDto.issued_date;
     transaction.return_date = updateTransactionDto.return_date;
     transaction.is_returned = updateTransactionDto.is_returned;
+
     return this.transactionRepository.save(transaction);
   }
 
@@ -88,8 +189,7 @@ export class TransactionsService {
   ): Promise<Transaction> {
     const book = await this.booksService.findOneBook(transactionData.book_id);
 
-    let dueDate = transactionData.due_date;
-    dateTypeChecker(dueDate);
+    dateTypeChecker(transactionData.due_date);
 
     if (!book || book.copies_available < 1) {
       throw new NotFoundException('There is no book available at the moment.');

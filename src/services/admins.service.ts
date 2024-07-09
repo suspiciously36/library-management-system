@@ -17,7 +17,7 @@ export class AdminsService {
     private readonly adminsRepository: Repository<Admin>,
   ) {}
   async findOrCreateAdmin(createAdminDto: CreateAdminDto): Promise<Admin> {
-    const existingAdmin = this.adminsRepository.findOne({
+    const existingAdmin = await this.adminsRepository.findOne({
       where: [
         {
           email: createAdminDto.email,
@@ -30,7 +30,7 @@ export class AdminsService {
 
     if (existingAdmin) {
       throw new ConflictException(
-        'Admin with this username/email already exists',
+        'Admin with this username or email already exists',
       );
     }
     const admin: Admin = new Admin();

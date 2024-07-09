@@ -27,7 +27,7 @@ export class FineService {
     const transaction =
       await this.transactionService.findOneTransaction(transaction_id);
 
-    const calculatedFine = this.fineRepository.findOne({
+    const calculatedFine = await this.fineRepository.findOne({
       where: { transaction_id: transaction.id },
     });
     if (calculatedFine) {
@@ -107,15 +107,6 @@ export class FineService {
   }
 
   // CRUD
-  createFine(createFineDto: CreateFineDto): Promise<Fine> {
-    const fine: Fine = new Fine();
-    fine.customer_id = createFineDto.customer_id;
-    fine.transaction_id = createFineDto.transaction_id;
-    fine.overdue_days = createFineDto.overdue_days;
-    fine.overdue_fee = createFineDto.overdue_fee;
-    fine.is_paid = createFineDto.is_paid;
-    return this.fineRepository.save(fine);
-  }
 
   async findAllFines(): Promise<{ fines: Fine[]; total: number }> {
     const fines = await this.fineRepository.find();
@@ -139,8 +130,6 @@ export class FineService {
     if (!fine) {
       throw new NotFoundException('Fine not found');
     }
-    fine.customer_id = updateFineDto.customer_id;
-    fine.transaction_id = updateFineDto.transaction_id;
     fine.overdue_days = updateFineDto.overdue_days;
     fine.overdue_fee = updateFineDto.overdue_fee;
     fine.is_paid = updateFineDto.is_paid;
