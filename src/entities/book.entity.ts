@@ -18,7 +18,7 @@ export class Book {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 250 })
+  @Column({ type: 'varchar', length: 250, unique: true })
   title: string;
 
   @Column({ type: 'int' })
@@ -33,7 +33,7 @@ export class Book {
   @Column({ type: 'int', nullable: true })
   total_copies: number;
 
-  @Column({ type: 'varchar', length: 20 })
+  @Column({ type: 'varchar', length: 20, unique: true })
   isbn: string;
 
   @Column({ type: 'int' })

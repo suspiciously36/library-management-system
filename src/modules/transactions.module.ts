@@ -14,10 +14,10 @@ import { Customer } from '../entities/customer.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Transaction, Book, Customer]),
+    forwardRef(() => BooksModule),
     forwardRef(() => CustomerModule),
     forwardRef(() => AdminsModule),
     forwardRef(() => ReservationsModule),
-    BooksModule,
     NotificationsModule,
   ],
   controllers: [TransactionsController],

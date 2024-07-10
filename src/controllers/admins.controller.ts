@@ -22,7 +22,7 @@ export class AdminsController {
   @ResponseMessage()
   @Post('add')
   create(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminsService.findOrCreateAdmin(createAdminDto);
+    return this.adminsService.createAdmin(createAdminDto);
   }
 
   @ResponseMessage()

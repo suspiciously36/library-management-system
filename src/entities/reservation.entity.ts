@@ -37,7 +37,9 @@ export class Reservation {
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
-  @ManyToOne(() => Book, (book: Book) => book.reservations)
+  @ManyToOne(() => Book, (book: Book) => book.reservations, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'book_id' })
   book: Book;
 }

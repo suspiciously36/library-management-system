@@ -52,6 +52,12 @@ export class AuthorsService {
     if (!author) {
       throw new NotFoundException('Author not found!');
     }
+    const existingAuthor = await this.authorRepository.findOne({
+      where: { name: updateAuthorDto.name },
+    });
+    if (existingAuthor) {
+      throw new ConflictException('Author name already exists');
+    }
     author.name = updateAuthorDto.name;
     return this.authorRepository.save(author);
   }

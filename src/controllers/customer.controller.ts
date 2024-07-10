@@ -22,7 +22,7 @@ export class CustomerController {
   @ResponseMessage()
   @Post('add')
   create(@Body() createCustomerDto: CreateCustomerDto) {
-    return this.customerService.findOrCreateCustomer(createCustomerDto);
+    return this.customerService.createCustomer(createCustomerDto);
   }
 
   @ResponseMessage()

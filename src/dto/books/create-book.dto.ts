@@ -1,4 +1,5 @@
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { isbnRegEx } from '../../common/utils/regex';
 
 export class CreateBookDto {
   @IsString()
@@ -7,6 +8,7 @@ export class CreateBookDto {
 
   @IsString()
   @IsNotEmpty()
+  @Matches(isbnRegEx, { message: 'Wrong isbn format' })
   isbn: string;
 
   @IsInt()

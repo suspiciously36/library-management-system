@@ -16,7 +16,7 @@ export class AdminsService {
     @InjectRepository(Admin)
     private readonly adminsRepository: Repository<Admin>,
   ) {}
-  async findOrCreateAdmin(createAdminDto: CreateAdminDto): Promise<Admin> {
+  async createAdmin(createAdminDto: CreateAdminDto): Promise<Admin> {
     const existingAdmin = await this.adminsRepository.findOne({
       where: [
         {

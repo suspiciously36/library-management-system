@@ -9,12 +9,18 @@ import { Book } from '../entities/book.entity';
 import { CreateBookDto } from 'src/dto/books/create-book.dto';
 import { UpdateBookDto } from 'src/dto/books/update-book.dto';
 import { SearchBookDto } from '../dto/books/search-book.dto';
+import { Transaction } from '../entities/transaction.entity';
+import { Reservation } from '../entities/reservation.entity';
 
 @Injectable()
 export class BooksService {
   constructor(
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
+    @InjectRepository(Reservation)
+    private readonly reservationRepository: Repository<Reservation>,
   ) {}
 
   // CRUD
@@ -25,6 +31,18 @@ export class BooksService {
     });
     if (existingBookTitle) {
       throw new ConflictException('Book with this title already exists');
+    }
+    const existingBookISBN = await this.bookRepository.findOne({
+      where: { isbn: createBookDto.isbn },
+    });
+    if (existingBookISBN) {
+      throw new ConflictException('Book with this ISBN already exists');
+    }
+    const year = new Date().getFullYear();
+    if (createBookDto.publication_year > year) {
+      throw new ConflictException(
+        'Publication year should not be in the future',
+      );
     }
     const book: Book = new Book();
     book.title = createBookDto.title;
@@ -56,9 +74,23 @@ export class BooksService {
 
   async updateBook(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
     const book = await this.bookRepository.findOneBy({ id });
-
     if (!book) {
       throw new NotFoundException('Book not found.');
+    }
+    const books = await this.bookRepository.find();
+    for (let i = 0; i < books.length; i++) {
+      if (updateBookDto.isbn === books[i].isbn) {
+        throw new ConflictException('Book with this ISBN already exists');
+      }
+      if (updateBookDto.title === books[i].title) {
+        throw new ConflictException('Book with this title already exists');
+      }
+    }
+    const year = new Date().getFullYear();
+    if (updateBookDto.publication_year > year) {
+      throw new ConflictException(
+        'Publication year should not be in the future',
+      );
     }
     book.title = updateBookDto.title;
     book.author_id = updateBookDto.author_id;
@@ -72,9 +104,26 @@ export class BooksService {
 
   async removeBook(id: number) {
     const book = await this.bookRepository.findOneBy({ id });
-
     if (!book) {
       throw new NotFoundException('Book not found.');
+    }
+    const transactions = await this.transactionRepository.findOne({
+      where: { book_id: id },
+    });
+    if (transactions) {
+      throw new ConflictException(
+        'This book is under a transaction, cannot delete',
+      );
+    }
+    const reservations = await this.reservationRepository.findOne({
+      where: {
+        book_id: id,
+      },
+    });
+    if (reservations) {
+      throw new ConflictException(
+        'This book is under a reservation, cannot delete',
+      );
     }
     return this.bookRepository.delete({ id });
   }

@@ -16,7 +16,7 @@ export class CustomerService {
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  async findOrCreateCustomer(
+  async createCustomer(
     createCustomerDto: CreateCustomerDto,
   ): Promise<Customer> {
     const existingCustomer = await this.customerRepository.findOne({
@@ -69,6 +69,18 @@ export class CustomerService {
     const customer = await this.customerRepository.findOneBy({ id });
     if (!customer) {
       throw new NotFoundException('Customer not found.');
+    }
+    const existingCustomer = await this.customerRepository.findOne({
+      where: [
+        { email: updateCustomerDto.email },
+        { phone: updateCustomerDto.phone },
+      ],
+    });
+
+    if (existingCustomer) {
+      throw new ConflictException(
+        'Customer with this email/phone already exists',
+      );
     }
     customer.name = updateCustomerDto.name;
     customer.phone = updateCustomerDto.phone;
