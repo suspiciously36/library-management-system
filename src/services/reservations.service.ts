@@ -97,7 +97,7 @@ export class ReservationsService {
     reservation.book.copies_available += 1;
     await this.booksRepository.save(reservation.book);
 
-    return this.reservationRepository.delete(reservation);
+    return this.reservationRepository.delete(reservation_id);
   }
 
   // Business Logic

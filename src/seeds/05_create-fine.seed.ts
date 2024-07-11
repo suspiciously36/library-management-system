@@ -32,7 +32,7 @@ export default class CreateFine implements Seeder {
           if (!fine.overdue_days) {
             transaction.return_date = transaction.due_date;
           }
-          fine.overdue_fee = fine.overdue_days * 10000;
+          fine.overdue_fee = fine.overdue_days * fine.overdue_rate;
           await connection.getRepository(Transaction).save(transaction);
           return fine;
         })

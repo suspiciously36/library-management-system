@@ -8,5 +8,6 @@ define(Fine, (_, context: { index: number }) => {
   fine.is_paid = fineData[context.index].is_paid;
   fine.overdue_days = fineData[context.index].overdue_days;
   fine.transaction_id = fineData[context.index].transaction_id;
+  fine.overdue_rate = fineData[context.index].overdue_rate;
   return fine;
 });

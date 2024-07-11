@@ -21,6 +21,9 @@ export class Fine {
   @Column('int', { nullable: true })
   overdue_fee: number;
 
+  @Column('int', { nullable: true })
+  overdue_rate: number;
+
   @Column('boolean', { default: false })
   is_paid: boolean;
 

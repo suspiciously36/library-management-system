@@ -49,10 +49,11 @@ export class FineService {
     }
 
     const fine = new Fine();
+    fine.overdue_rate = 10000;
     if (returnDate.isAfter(dueDate)) {
       const numOfOverdueDays = returnDate.diff(dueDate, 'days');
       fine.overdue_days = numOfOverdueDays;
-      fine.overdue_fee = fine.overdue_days * 10000; // 10k/day
+      fine.overdue_fee = fine.overdue_days * fine.overdue_rate; // 10k/day
       fine.customer_id = transaction.customer_id;
       fine.transaction_id = transaction.id;
       const customer = await this.customerService.findOneCustomer(
@@ -131,7 +132,7 @@ export class FineService {
       throw new NotFoundException('Fine not found');
     }
     fine.overdue_days = updateFineDto.overdue_days;
-    fine.overdue_fee = updateFineDto.overdue_fee;
+    fine.overdue_fee = updateFineDto.overdue_days * fine.overdue_rate;
     fine.is_paid = updateFineDto.is_paid;
     return this.fineRepository.save(fine);
   }
@@ -140,6 +141,9 @@ export class FineService {
     const fine = await this.fineRepository.findOneBy({ id });
     if (!fine) {
       throw new NotFoundException('Fine not found');
+    }
+    if (!fine.is_paid) {
+      throw new ConflictException('Fine is not paid, cannot delete');
     }
     return this.fineRepository.delete({ id });
   }
