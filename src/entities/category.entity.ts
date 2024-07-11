@@ -13,7 +13,7 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 200 })
+  @Column({ type: 'varchar', length: 200, unique: true })
   name: string;
 
   @CreateDateColumn({ default: () => 'current_timestamp' })

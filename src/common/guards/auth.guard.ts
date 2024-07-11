@@ -31,6 +31,10 @@ export class AuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET,
       });
 
+      if (payload.type !== 'access') {
+        throw new UnauthorizedException('Invalid token type');
+      }
+
       request['user'] = payload;
       return true;
     } catch {

@@ -13,7 +13,7 @@ export class Author {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', unique: true })
   name: string;
 
   @CreateDateColumn({ default: () => 'current_timestamp' })

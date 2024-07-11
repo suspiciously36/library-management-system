@@ -79,6 +79,7 @@
     GET: / - Get all reservations
     GET: /:id - Get reservation by {id}
     PATCH: /:id - Update reservation by {id} {body: {customer_id, book_id, is_fulfilled}}
+    DELETE: /:id - Delete reservation by {id}
 
     POST: /create - create new book reservation for customer {body: {book_id, customer_id}}
     DELETE: /cancel/:id - cancel book reservation by {reservation_id}

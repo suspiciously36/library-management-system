@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -78,6 +79,25 @@ export class ReservationsService {
     reservation.book_id = updateReservationDto.book_id;
     reservation.is_fulfilled = updateReservationDto.is_fulfilled;
     return this.reservationRepository.save(reservation);
+  }
+
+  async deleteReservation(reservation_id: number) {
+    const reservation = await this.reservationRepository.findOne({
+      where: { id: reservation_id },
+      relations: ['book'],
+    });
+    if (!reservation) {
+      throw new NotFoundException('Reservation not found');
+    }
+    if (reservation.is_fulfilled) {
+      throw new ForbiddenException(
+        'The reservation is fulfilled, you might not want to delete',
+      );
+    }
+    reservation.book.copies_available += 1;
+    await this.booksRepository.save(reservation.book);
+
+    return this.reservationRepository.delete(reservation);
   }
 
   // Business Logic

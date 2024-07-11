@@ -39,9 +39,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, username: user.username };
+    const payload = { sub: user.id, username: user.username, type: 'access' };
     const refPayload = {
       sub: Math.random() + new Date().getTime(),
+      type: 'refresh',
     };
     const accessToken = await this.jwtService.signAsync(payload);
     const refreshToken = await this.jwtService.signAsync(refPayload);
@@ -80,12 +81,12 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token invalid');
     }
 
-    const payload = { sub: admin.id, username: admin.username };
+    const payload = { sub: admin.id, username: admin.username, type: 'access' };
     try {
       const decoded = await this.jwtService.verifyAsync(refreshToken);
 
-      if (!decoded) {
-        throw new UnauthorizedException();
+      if (!decoded || decoded.type !== 'refresh') {
+        throw new UnauthorizedException('Invalid refresh token');
       }
 
       const newAccessToken = await this.jwtService.signAsync(payload);
@@ -96,7 +97,7 @@ export class AuthService {
       }
 
       const newRefreshToken = await this.jwtService.signAsync(
-        {},
+        { sub: Math.random() + new Date().getTime(), type: 'refresh' },
         { expiresIn: '7d' },
       );
 

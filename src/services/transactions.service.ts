@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -143,9 +144,6 @@ export class TransactionsService {
       }
     }
 
-    console.log(transaction.is_returned);
-    console.log(updateTransactionDto.is_returned);
-
     if (!transaction.is_returned) {
       if (updateTransactionDto.is_returned) {
         if (!updateTransactionDto.return_date) {
@@ -175,10 +173,22 @@ export class TransactionsService {
   }
 
   async removeTransaction(id: number) {
-    const transaction = await this.transactionRepository.findOneBy({ id });
+    const transaction = await this.transactionRepository.findOne({
+      where: { id: id },
+      relations: ['book'],
+    });
     if (!transaction) {
       throw new NotFoundException('Transaction not found.');
     }
+    if (transaction.is_returned) {
+      throw new ForbiddenException(
+        'The transaction is completed, you might not want to delete it',
+      );
+    } else {
+      transaction.book.copies_available += 1;
+      await this.bookRepository.save(transaction.book);
+    }
+
     return this.transactionRepository.delete({ id });
   }
 

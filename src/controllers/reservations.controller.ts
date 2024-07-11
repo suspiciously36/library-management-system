@@ -66,4 +66,11 @@ export class ReservationsController {
       updateReservationDto,
     );
   }
+
+  @UseGuards(AuthGuard)
+  @ResponseMessage()
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.reservationsService.deleteReservation(+id);
+  }
 }
