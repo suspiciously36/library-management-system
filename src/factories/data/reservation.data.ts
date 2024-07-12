@@ -18,6 +18,30 @@ export const reservationData = [
     is_fulfilled: false,
   },
   {
+    customer_id: 3,
+    book_id: 2,
+    expire_at: new Date(2024, 6, 3),
+    is_fulfilled: false,
+  },
+  {
+    customer_id: 3,
+    book_id: 1,
+    expire_at: new Date(2024, 6, 3),
+    is_fulfilled: true,
+  },
+  {
+    customer_id: 3,
+    book_id: 13,
+    expire_at: new Date(2024, 6, 3),
+    is_fulfilled: false,
+  },
+  {
+    customer_id: 3,
+    book_id: 14,
+    expire_at: new Date(2024, 6, 3),
+    is_fulfilled: false,
+  },
+  {
     customer_id: 2,
     book_id: 6,
     expire_at: new Date(2024, 6, 14),

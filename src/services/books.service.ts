@@ -58,7 +58,7 @@ export class BooksService {
   async findAllBook(): Promise<{ books: Book[]; total: number }> {
     const books = await this.bookRepository.find();
     if (!books || !books.length) {
-      throw new NotFoundException('Books not found.');
+      throw new NotFoundException('Books not found');
     }
     const total = books.length;
     return { books, total };
@@ -67,7 +67,7 @@ export class BooksService {
   async findOneBook(id: number) {
     const book = await this.bookRepository.findOneBy({ id });
     if (!book) {
-      throw new NotFoundException('Book not found.');
+      throw new NotFoundException('Book not found');
     }
     return book;
   }
@@ -75,7 +75,7 @@ export class BooksService {
   async updateBook(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
     const book = await this.bookRepository.findOneBy({ id });
     if (!book) {
-      throw new NotFoundException('Book not found.');
+      throw new NotFoundException('Book not found');
     }
     const books = await this.bookRepository.find();
     for (let i = 0; i < books.length; i++) {
@@ -105,7 +105,7 @@ export class BooksService {
   async removeBook(id: number) {
     const book = await this.bookRepository.findOneBy({ id });
     if (!book) {
-      throw new NotFoundException('Book not found.');
+      throw new NotFoundException('Book not found');
     }
     const transactions = await this.transactionRepository.findOne({
       where: { book_id: id },
@@ -136,7 +136,7 @@ export class BooksService {
       book.copies_available -= 1;
       this.bookRepository.save(book);
     } else {
-      throw new NotFoundException('Book not found.');
+      throw new NotFoundException('Book not found');
     }
   }
 

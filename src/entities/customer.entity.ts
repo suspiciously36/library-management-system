@@ -30,8 +30,8 @@ export class Customer {
   @Column({ type: 'int', nullable: true, default: 0 })
   reservation_cooldown_timestamp: number;
 
-  // @Column({ type: 'enum', enum: ['m', 'f', 'u'] })
-  // gender: string;
+  @Column({ type: 'int', default: 5, nullable: true })
+  reservation_limit: number;
 
   @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;

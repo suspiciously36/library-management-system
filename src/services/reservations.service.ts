@@ -37,7 +37,7 @@ export class ReservationsService {
   }> {
     const reservations = await this.reservationRepository.find();
     if (!reservations || !reservations.length) {
-      throw new NotFoundException('Reservations not found.');
+      throw new NotFoundException('Reservations not found');
     }
     const total = reservations.length;
     return { reservations, total };
@@ -47,7 +47,7 @@ export class ReservationsService {
     const reservation = await this.reservationRepository.findOneBy({ id });
 
     if (!reservation) {
-      throw new NotFoundException('Reservation not found.');
+      throw new NotFoundException('Reservation not found');
     }
     return reservation;
   }
@@ -58,7 +58,7 @@ export class ReservationsService {
   ) {
     const reservation = await this.findOneReservation(id);
     if (!reservation) {
-      throw new NotFoundException('Reservation not found.');
+      throw new NotFoundException('Reservation not found');
     }
 
     const customer = await this.customersRepository.findOne({
@@ -124,8 +124,14 @@ export class ReservationsService {
 
     const customer = await this.customerService.findOneCustomer(customer_id);
 
+    if (!customer.reservation_limit) {
+      throw new ForbiddenException(
+        'This customer reached the reservation limit, cannot reserve more books',
+      );
+    }
+
     if (!book) {
-      throw new NotFoundException(`Book with id = ${book_id} not found.`);
+      throw new NotFoundException(`Book not found`);
     }
 
     if (book.copies_available > 0) {
@@ -136,6 +142,12 @@ export class ReservationsService {
         customer,
         expire_at: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week expiration timer
       });
+
+      //Decreasing customer's reservation_limit
+      customer.reservation_limit -= 1;
+      this.customersRepository.save(customer);
+
+      // Sending mail notif
       await this.notificationService.sendBookReserveNotification(
         customer.email,
         book.title,
@@ -143,7 +155,7 @@ export class ReservationsService {
       return await this.reservationRepository.save(reservation);
     } else {
       throw new ConflictException(
-        'All copies of the book are already reserved.',
+        'All copies of the book are already reserved',
       );
     }
   }
@@ -155,21 +167,26 @@ export class ReservationsService {
     });
 
     if (!reservation) {
-      throw new NotFoundException('Reservation not found.');
+      throw new NotFoundException('Reservation not found');
     }
     if (reservation.is_fulfilled) {
       throw new ConflictException(
-        'This reservation is already fulfilled, cannot cancel.',
+        'This reservation is already fulfilled, cannot cancel',
       );
     }
 
     reservation.book.copies_available += 1;
+    reservation.customer.reservation_limit += 1;
 
+    // Sending mail notif
     await this.notificationService.sendReservationCancelConfirmation(
       reservation.customer.email,
       reservation.book.title,
     );
+
+    // Saving data
     await this.booksRepository.save(reservation.book);
+    await this.customersRepository.save(reservation.customer);
     await this.reservationRepository.remove(reservation);
   }
 
@@ -179,11 +196,11 @@ export class ReservationsService {
       relations: ['book', 'customer'],
     });
     if (!reservation) {
-      throw new NotFoundException('Reservation not found.');
+      throw new NotFoundException('Reservation not found');
     }
 
     if (reservation.is_fulfilled) {
-      throw new ConflictException('This reservation is already borrowed.');
+      throw new ConflictException('This reservation is already borrowed');
     }
 
     reservation.is_fulfilled = true;
@@ -203,10 +220,16 @@ export class ReservationsService {
       await this.transactionService.createIssueTransaction(transactionData);
     }
 
+    // Adding customer's reservation_limit cause fulfilled
+    reservation.customer.reservation_limit += 1;
+    await this.customersRepository.save(reservation.customer);
+
+    // Sending mail notif
     await this.notificationService.sendFulfillConfirmation(
       reservation.customer.email,
       reservation.book.title,
     );
+
     await this.reservationRepository.save(reservation);
   }
 
@@ -219,6 +242,7 @@ export class ReservationsService {
 
     for (const reservation of expiredReservations) {
       reservation.book.copies_available += 1;
+      reservation.customer.reservation_limit += 1;
       reservation.customer.reservation_cooldown_timestamp =
         now.getTime() + 3 * 24 * 60 * 60 * 1000;
       await this.booksRepository.save(reservation.book);

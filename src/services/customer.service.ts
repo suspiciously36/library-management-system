@@ -39,7 +39,7 @@ export class CustomerService {
     customer.email = createCustomerDto.email;
     customer.reservation_cooldown_timestamp =
       createCustomerDto.reservation_cooldown_timestamp;
-    // customer.gender = createCustomerDto.gender;
+    customer.reservation_limit = createCustomerDto.reservation_limit;
 
     return this.customerRepository.save(customer);
   }
@@ -47,7 +47,7 @@ export class CustomerService {
   async findAllCustomer(): Promise<{ customers: Customer[]; total: number }> {
     const customers = await this.customerRepository.find();
     if (!customers || !customers.length) {
-      throw new NotFoundException('Customers not found.');
+      throw new NotFoundException('Customers not found');
     }
     const total = customers.length;
     return { customers, total };
@@ -56,7 +56,7 @@ export class CustomerService {
   async findOneCustomer(id: number) {
     const customer = await this.customerRepository.findOneBy({ id });
     if (!customer) {
-      throw new NotFoundException('Customer not found.');
+      throw new NotFoundException('Customer not found');
     }
 
     return customer;
@@ -68,7 +68,7 @@ export class CustomerService {
   ): Promise<Customer> {
     const customer = await this.customerRepository.findOneBy({ id });
     if (!customer) {
-      throw new NotFoundException('Customer not found.');
+      throw new NotFoundException('Customer not found');
     }
     const existingCustomer = await this.customerRepository.findOne({
       where: [
@@ -87,14 +87,15 @@ export class CustomerService {
     customer.address = updateCustomerDto.address;
     customer.email = updateCustomerDto.email;
     customer.reservation_cooldown_timestamp =
-      customer.reservation_cooldown_timestamp;
+      updateCustomerDto.reservation_cooldown_timestamp;
+    customer.reservation_limit = updateCustomerDto.reservation_limit;
     return this.customerRepository.save(customer);
   }
 
   async removeCustomer(id: number) {
     const customer = await this.customerRepository.findOneBy({ id });
     if (!customer) {
-      throw new NotFoundException('Customer not found.');
+      throw new NotFoundException('Customer not found');
     }
     return this.customerRepository.delete({ id });
   }

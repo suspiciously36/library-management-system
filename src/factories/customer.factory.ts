@@ -11,5 +11,6 @@ define(Customer, (_, context: { index: number }) => {
     (customer.phone = customerData[context.index].phone);
   customer.reservation_cooldown_timestamp =
     customerData[context.index].reservation_cooldown_timestamp;
+  customer.reservation_limit = customerData[context.index].reservation_limit;
   return customer;
 });

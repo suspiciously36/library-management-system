@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsString,
   Matches,
   MinLength,
@@ -27,6 +28,9 @@ export class CreateCustomerDto {
 
   @IsString()
   address: string;
+
+  @IsNumber()
+  reservation_limit: number;
 
   reservation_cooldown_timestamp: number;
 
