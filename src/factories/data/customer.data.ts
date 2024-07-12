@@ -14,7 +14,7 @@ export const customerData = [
     phone: '2274839028',
     reservation_cooldown_timestamp:
       new Date().getTime() + 2 * 24 * 60 * 60 * 1000,
-    reservation_limit: 5,
+    reservation_limit: 3,
   },
   {
     name: 'Hoang Tuan Kiet',

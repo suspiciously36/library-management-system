@@ -88,7 +88,7 @@ export class TransactionsService {
   }> {
     const transactions = await this.transactionRepository.find();
     if (!transactions || !transactions.length) {
-      throw new NotFoundException('Transactions not found.');
+      throw new NotFoundException('Transactions not found');
     }
     const total = transactions.length;
     return { transactions, total };
@@ -97,7 +97,7 @@ export class TransactionsService {
   async findOneTransaction(id: number) {
     const transaction = await this.transactionRepository.findOneBy({ id });
     if (!transaction) {
-      throw new NotFoundException('Transaction not found.');
+      throw new NotFoundException('Transaction not found');
     }
     return transaction;
   }
@@ -129,7 +129,7 @@ export class TransactionsService {
 
     const transaction = await this.transactionRepository.findOneBy({ id });
     if (!transaction) {
-      throw new NotFoundException('Transaction not found.');
+      throw new NotFoundException('Transaction not found');
     }
 
     if (returnDate) {
@@ -178,7 +178,7 @@ export class TransactionsService {
       relations: ['book'],
     });
     if (!transaction) {
-      throw new NotFoundException('Transaction not found.');
+      throw new NotFoundException('Transaction not found');
     }
     if (transaction.is_returned) {
       throw new ForbiddenException(

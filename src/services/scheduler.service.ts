@@ -16,12 +16,12 @@ export class SchedulerService {
     private readonly transactionService: TransactionsService,
   ) {
     // EVERY_DAY_AT_7AM
-    this.reservationExpireCronJob = new CronJob('0 7 * * *', async () => {
+    this.reservationExpireCronJob = new CronJob('* * * * *', async () => {
       await this.handleReservationExpireCron();
     });
 
     // EVERY_DAY_AT_7AM
-    this.transactionCronJob = new CronJob('0 7 * * *', async () => {
+    this.transactionCronJob = new CronJob('* * * * *', async () => {
       await this.handleTransactionCron();
     });
 

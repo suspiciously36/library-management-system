@@ -34,7 +34,7 @@ export class CategoriesService {
   async findAllCategory(): Promise<{ categories: Category[]; total: number }> {
     const categories = await this.categoryRepository.find();
     if (!categories || !categories.length) {
-      throw new NotFoundException('Categories not found.');
+      throw new NotFoundException('Categories not found');
     }
     const total = categories.length;
     return { categories, total };
@@ -43,7 +43,7 @@ export class CategoriesService {
   async findOneCategory(id: number) {
     const category = await this.categoryRepository.findOneBy({ id });
     if (!category) {
-      throw new NotFoundException('Category not found.');
+      throw new NotFoundException('Category not found');
     }
     return category;
   }
@@ -54,7 +54,7 @@ export class CategoriesService {
   ): Promise<Category> {
     const category = await this.findOneCategory(id);
     if (!category) {
-      throw new NotFoundException('Category not found.');
+      throw new NotFoundException('Category not found');
     }
     const existingCategory = await this.categoryRepository.findOne({
       where: {
@@ -71,7 +71,7 @@ export class CategoriesService {
   async removeCategory(id: number) {
     const category = await this.findOneCategory(id);
     if (!category) {
-      throw new NotFoundException('Category not found.');
+      throw new NotFoundException('Category not found');
     }
     return this.categoryRepository.delete({ id });
   }

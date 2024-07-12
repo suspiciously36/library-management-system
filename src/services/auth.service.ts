@@ -31,7 +31,7 @@ export class AuthService {
   ): Promise<{ access_token: string }> {
     const user = await this.adminsService.findOneUsername(username);
     if (!user) {
-      throw new NotFoundException('Username not found.');
+      throw new NotFoundException('Username not found');
     }
 
     const isMatch = bcrypt.compareSync(pass, user?.password);

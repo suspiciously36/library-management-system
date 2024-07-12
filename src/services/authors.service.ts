@@ -30,7 +30,7 @@ export class AuthorsService {
   async findAllAuthor(): Promise<{ authors: Author[]; total: number }> {
     const authors = await this.authorRepository.find();
     if (!authors || !authors.length) {
-      throw new NotFoundException('Authors not found!');
+      throw new NotFoundException('Authors not found');
     }
     const total = authors.length;
     return { authors, total };
@@ -39,7 +39,7 @@ export class AuthorsService {
   async findOneAuthor(id: number) {
     const author = await this.authorRepository.findOneBy({ id });
     if (!author) {
-      throw new NotFoundException('Author not found!');
+      throw new NotFoundException('Author not found');
     }
     return author;
   }
@@ -50,7 +50,7 @@ export class AuthorsService {
   ): Promise<Author> {
     const author = await this.findOneAuthor(id);
     if (!author) {
-      throw new NotFoundException('Author not found!');
+      throw new NotFoundException('Author not found');
     }
     const existingAuthor = await this.authorRepository.findOne({
       where: { name: updateAuthorDto.name },
@@ -65,7 +65,7 @@ export class AuthorsService {
   async removeAuthor(id: number) {
     const author = await this.findOneAuthor(id);
     if (!author) {
-      throw new NotFoundException('Author not found!');
+      throw new NotFoundException('Author not found');
     }
     return this.authorRepository.delete({ id });
   }
