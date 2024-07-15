@@ -205,6 +205,12 @@ export class TransactionsService {
       throw new NotFoundException('There is no book available at the moment.');
     }
 
+    const dueDate = moment(transactionData.due_date);
+    const issueDate = moment(transactionData.issued_date);
+    if (dueDate.isBefore(issueDate)) {
+      throw new ConflictException('Due Date cannot be before Issue Date');
+    }
+
     await this.booksService.decreaseCopies(book.id);
     return this.transactionRepository.save(transactionData);
   }

@@ -90,8 +90,7 @@
     Cron job for reservations and transactions checking (EVERY_DAY_AT_7AM) (Guarded)
 
     - Check the transactions table if the book is returned before due_date (overdue), if not, send mail notification to customer with fine information
-    - Check the reservation table if the book is fulfilled (borrowed) before expiration, if not, send mail notification to customer
-    - Check the reservation table if customer's book reserved is expired, if expired, send mail notification to customer and set the penalty timer for that customer's next book reservation (3 days)
+    - Check the reservation table if the book is fulfilled (borrowed) before expiration, if not, send mail notification to customer and set the penalty timer for that customer's next book reservation (3 days)
 
       POST: /start - start the cron job
       POST: /stop - stop the cron job

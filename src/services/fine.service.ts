@@ -49,7 +49,7 @@ export class FineService {
     }
 
     const fine = new Fine();
-    fine.overdue_rate = 10000;
+    fine.overdue_rate = 1000;
     if (returnDate.isAfter(dueDate)) {
       const numOfOverdueDays = returnDate.diff(dueDate, 'days');
       fine.overdue_days = numOfOverdueDays;

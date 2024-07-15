@@ -114,7 +114,7 @@ export class ReservationsService {
     });
 
     if (penaltyCustomer) {
-      throw new ConflictException(
+      throw new ForbiddenException(
         'This customer was unable to make a reservation due to a waiting time penalty since the previous reservation expired',
       );
     }
