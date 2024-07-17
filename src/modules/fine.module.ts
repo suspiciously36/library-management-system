@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FineService } from '../services/fine.service';
 import { FineController } from '../controllers/fine.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,13 +6,15 @@ import { Fine } from '../entities/fine.entity';
 import { TransactionsModule } from './transactions.module';
 import { NotificationsModule } from './notifications.module';
 import { CustomerModule } from './customer.module';
+import { BlacklistModule } from './blacklist.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Fine]),
-    TransactionsModule,
+    forwardRef(() => TransactionsModule),
     NotificationsModule,
-    CustomerModule,
+    forwardRef(() => CustomerModule),
+    forwardRef(() => BlacklistModule),
   ],
   controllers: [FineController],
   providers: [FineService],

@@ -56,6 +56,34 @@ export class ReservationsService {
     id: number,
     updateReservationDto: UpdateReservationDto,
   ) {
+    // Handle Blacklisted Customer
+    const blacklistedCustomer = await this.customersRepository.findOne({
+      where: {
+        id: updateReservationDto.customer_id,
+        is_blacklisted: true,
+      },
+    });
+
+    if (blacklistedCustomer) {
+      throw new ForbiddenException(
+        'This customer is blacklisted due to unpaid fines for more than 14 days, cannot create Reservation',
+      );
+    }
+
+    // Handle cooldown penalty Customer
+    const penaltyCustomer = await this.customersRepository.findOne({
+      where: {
+        id: updateReservationDto.customer_id,
+        reservation_cooldown_timestamp: MoreThan(new Date().getTime()),
+      },
+    });
+
+    if (penaltyCustomer) {
+      throw new ForbiddenException(
+        'This customer is on a cooldown penalty for book reservation.',
+      );
+    }
+
     const reservation = await this.findOneReservation(id);
     if (!reservation) {
       throw new NotFoundException('Reservation not found');
@@ -116,6 +144,20 @@ export class ReservationsService {
     if (penaltyCustomer) {
       throw new ForbiddenException(
         'This customer was unable to make a reservation due to a waiting time penalty since the previous reservation expired',
+      );
+    }
+
+    // Handle Blacklisted Customer
+    const blacklistedCustomer = await this.customersRepository.findOne({
+      where: {
+        id: customer_id,
+        is_blacklisted: true,
+      },
+    });
+
+    if (blacklistedCustomer) {
+      throw new ForbiddenException(
+        'This customer is blacklisted due to unpaid fines for more than 14 days, cannot create Reservation',
       );
     }
 

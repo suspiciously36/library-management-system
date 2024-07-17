@@ -12,5 +12,6 @@ define(Customer, (_, context: { index: number }) => {
   customer.reservation_cooldown_timestamp =
     customerData[context.index].reservation_cooldown_timestamp;
   customer.reservation_limit = customerData[context.index].reservation_limit;
+  customer.is_blacklisted = customerData[context.index].is_blacklisted;
   return customer;
 });

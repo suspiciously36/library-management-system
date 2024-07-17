@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsInt,
   IsNotEmpty,
@@ -29,10 +30,11 @@ export class CreateCustomerDto {
   @IsString()
   address: string;
 
-  @IsNumber()
   reservation_limit: number;
 
   reservation_cooldown_timestamp: number;
+
+  is_blacklisted: boolean;
 
   // @IsString()
   // @IsEnum(['f', 'm', 'u'])

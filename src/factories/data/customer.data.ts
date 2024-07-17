@@ -6,6 +6,7 @@ export const customerData = [
     phone: '9497820345',
     reservation_cooldown_timestamp: 0,
     reservation_limit: 4,
+    is_blacklisted: false,
   },
   {
     name: 'Nakamura Mushirou',
@@ -15,6 +16,7 @@ export const customerData = [
     reservation_cooldown_timestamp:
       new Date().getTime() + 2 * 24 * 60 * 60 * 1000,
     reservation_limit: 3,
+    is_blacklisted: false,
   },
   {
     name: 'Hoang Tuan Kiet',
@@ -23,5 +25,15 @@ export const customerData = [
     phone: '0868906082',
     reservation_cooldown_timestamp: new Date().getTime() + 20 * 60 * 1000,
     reservation_limit: 0,
+    is_blacklisted: false,
+  },
+  {
+    name: 'The Blacklisted One',
+    email: 'blacklistedCustomer@gmail.com',
+    address: '20 Blacklist St.',
+    phone: '0966757557',
+    reservation_cooldown_timestamp: 0,
+    reservation_limit: 5,
+    is_blacklisted: true,
   },
 ];

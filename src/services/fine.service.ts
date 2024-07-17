@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,6 +19,7 @@ export class FineService {
   constructor(
     @InjectRepository(Fine)
     private readonly fineRepository: Repository<Fine>,
+    @Inject(forwardRef(() => TransactionsService))
     private transactionService: TransactionsService,
     private notificationService: NotificationsService,
     private customerService: CustomerService,

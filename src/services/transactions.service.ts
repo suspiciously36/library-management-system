@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transaction.entity';
-import { LessThan, Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import { UpdateTransactionDto } from 'src/dto/transactions/update-transaction.dto';
 import { CreateTransactionDto } from 'src/dto/transactions/create-transaction.dto';
 import { BooksService } from './books.service';
@@ -17,6 +17,8 @@ import { dateTypeChecker } from '../common/utils/dateTypeChecker.util';
 import { numOfDaysCalc } from '../common/utils/calculateNumOfDays.util';
 import { Book } from '../entities/book.entity';
 import { Customer } from '../entities/customer.entity';
+import { Fine } from '../entities/fine.entity';
+import { FineService } from './fine.service';
 
 @Injectable()
 export class TransactionsService {
@@ -27,6 +29,7 @@ export class TransactionsService {
     private readonly bookRepository: Repository<Book>,
     @InjectRepository(Customer)
     private readonly customerRepository: Repository<Customer>,
+    private fineService: FineService,
     private booksService: BooksService,
     private notificationService: NotificationsService,
   ) {}
@@ -34,6 +37,17 @@ export class TransactionsService {
   async createTransaction(
     createTransactionDto: CreateTransactionDto,
   ): Promise<Transaction> {
+    // Handle Blacklisted Customer
+    const blacklistedCustomer = await this.customerRepository.findOne({
+      where: { id: createTransactionDto.customer_id, is_blacklisted: true },
+    });
+
+    if (blacklistedCustomer) {
+      throw new ForbiddenException(
+        'This customer is blacklisted due to unpaid fines for more than 14 days, cannot create Transaction',
+      );
+    }
+
     const book = await this.bookRepository.findOne({
       where: { id: createTransactionDto.book_id },
     });
@@ -106,6 +120,16 @@ export class TransactionsService {
     id: number,
     updateTransactionDto: UpdateTransactionDto,
   ): Promise<Transaction> {
+    // Handle Blacklisted Customer
+    const blacklistedCustomer = await this.customerRepository.findOne({
+      where: { id: updateTransactionDto.customer_id, is_blacklisted: true },
+    });
+
+    if (blacklistedCustomer) {
+      throw new ForbiddenException(
+        'This customer is blacklisted due to unpaid fines for more than 14 days, cannot create Transaction',
+      );
+    }
     const book = await this.bookRepository.findOne({
       where: { id: updateTransactionDto.book_id },
     });
@@ -197,6 +221,17 @@ export class TransactionsService {
   async createIssueTransaction(
     transactionData: Partial<Transaction>,
   ): Promise<Transaction> {
+    // Handle Blacklisted Customer
+    const blacklistedCustomer = await this.customerRepository.findOne({
+      where: { id: transactionData.customer_id, is_blacklisted: true },
+    });
+
+    if (blacklistedCustomer) {
+      throw new ForbiddenException(
+        'This customer is blacklisted due to unpaid fines for more than 14 days, cannot create Transaction',
+      );
+    }
+
     const book = await this.booksService.findOneBook(transactionData.book_id);
 
     dateTypeChecker(transactionData.due_date);
@@ -269,6 +304,7 @@ export class TransactionsService {
     // MAILER DEMO: ACTIVATE THIS WILL SEND MAIL DEPENDS ON THE CRON EXPRESSION
 
     for (const issuance of overdueIssuance) {
+      await this.fineService.calculateFine(issuance.id);
       await this.notificationService.sendOverdueNotification(
         issuance.customer.email,
         issuance.book.title,

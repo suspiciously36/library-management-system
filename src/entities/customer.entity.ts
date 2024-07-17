@@ -33,6 +33,9 @@ export class Customer {
   @Column({ type: 'int', default: 5, nullable: true })
   reservation_limit: number;
 
+  @Column({ type: 'boolean', default: false })
+  is_blacklisted: boolean;
+
   @CreateDateColumn({ default: () => 'current_timestamp' })
   created_at: Date;
 

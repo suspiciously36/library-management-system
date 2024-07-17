@@ -16,6 +16,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulerModule } from './modules/scheduler.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
+import { BlacklistModule } from './modules/blacklist.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import configuration from './config/configuration';
     TransactionsModule,
     AdminsModule,
     AuthModule,
+    BlacklistModule,
     FineModule,
     NotificationsModule,
     ReservationsModule,
