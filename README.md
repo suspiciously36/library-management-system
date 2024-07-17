@@ -107,7 +107,7 @@
     POST: /issue - for customer to request a book issuance {body: {book_id, customer_id, due_date}}
     PATCH: /return/:id - for customer to request a book return by {transaction_id}
 
-Database tables diagram: https://dbdiagram.io/d/Library-Management-System-665fa307b65d933879840ec9
-Use Case diagram: https://lucid.app/lucidchart/a11fa0a8-60f8-45f4-b531-01823c27e594/edit?viewport_loc=-2157%2C-1635%2C5929%2C2742%2C.Q4MUjXso07N&invitationId=inv_5d6a3b13-02b5-435f-8def-6c0f4056ab6a (Login needed)
+- Database tables diagram: https://dbdiagram.io/d/Library-Management-System-665fa307b65d933879840ec9
+- Use Case diagram: https://lucid.app/lucidchart/a11fa0a8-60f8-45f4-b531-01823c27e594/edit?viewport_loc=-2157%2C-1635%2C5929%2C2742%2C.Q4MUjXso07N&invitationId=inv_5d6a3b13-02b5-435f-8def-6c0f4056ab6a (Login needed)
 
 ![usecasediagram](Use_case_diagram.jpeg)
