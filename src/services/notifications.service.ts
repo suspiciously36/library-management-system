@@ -68,5 +68,12 @@ export class NotificationsService {
   async sendBlacklistNotification(to: string): Promise<void> {
     const subject = `Blacklist Notification`;
     const content = `You have been blacklisted from our library due to not pay overdue fee for over 14 days, please contact support for further information.`;
+    await this.mailerService.sendMail({ to, subject, text: content });
+  }
+
+  async sendBlacklistClearedNotification(to: string): Promise<void> {
+    const subject = `Blacklist Status Cleared Notification`;
+    const content = `Your blacklist status has been cleared. Thank you for paying the overdue fine.`;
+    await this.mailerService.sendMail({ to, subject, text: content });
   }
 }

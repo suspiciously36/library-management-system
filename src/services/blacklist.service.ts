@@ -27,4 +27,16 @@ export class BlacklistService {
       );
     }
   }
+  async clearBlacklistStatus(customer_id: number): Promise<void> {
+    const customer = await this.customerRepository.findOne({
+      where: { id: customer_id },
+    });
+    if (customer) {
+      customer.is_blacklisted = false;
+      await this.customerRepository.save(customer);
+      await this.notificationService.sendBlacklistClearedNotification(
+        customer.email,
+      );
+    }
+  }
 }

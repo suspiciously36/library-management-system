@@ -14,6 +14,7 @@ import { NotificationsService } from './notifications.service';
 import { CustomerService } from './customer.service';
 import * as moment from 'moment';
 import { Customer } from '../entities/customer.entity';
+import { BlacklistService } from './blacklist.service';
 @Injectable()
 export class FineService {
   constructor(
@@ -25,6 +26,7 @@ export class FineService {
     private transactionService: TransactionsService,
     private notificationService: NotificationsService,
     private customerService: CustomerService,
+    private blacklistService: BlacklistService,
   ) {}
 
   // Business Logic
@@ -104,8 +106,7 @@ export class FineService {
     );
 
     // De-blacklisting customer who paid the fines
-    customer.is_blacklisted = false;
-    await this.customerRepository.save(customer);
+    await this.blacklistService.clearBlacklistStatus(customer.id);
 
     //Send notif mail
     await this.notificationService.sendPaymentConfirmation(
@@ -147,8 +148,7 @@ export class FineService {
     fine.overdue_fee = updateFineDto.overdue_days * fine.overdue_rate;
     fine.is_paid = updateFineDto.is_paid;
     if (fine.is_paid) {
-      customer.is_blacklisted = false;
-      await this.customerRepository.save(customer);
+      await this.blacklistService.clearBlacklistStatus(customer.id);
     }
     return this.fineRepository.save(fine);
   }
