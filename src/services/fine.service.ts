@@ -5,7 +5,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateFineDto } from '../dto/fines/create-fine.dto';
 import { UpdateFineDto } from '../dto/fines/update-fine.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Fine } from '../entities/fine.entity';
@@ -14,11 +13,14 @@ import { TransactionsService } from './transactions.service';
 import { NotificationsService } from './notifications.service';
 import { CustomerService } from './customer.service';
 import * as moment from 'moment';
+import { Customer } from '../entities/customer.entity';
 @Injectable()
 export class FineService {
   constructor(
     @InjectRepository(Fine)
     private readonly fineRepository: Repository<Fine>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
     @Inject(forwardRef(() => TransactionsService))
     private transactionService: TransactionsService,
     private notificationService: NotificationsService,
@@ -101,6 +103,10 @@ export class FineService {
       fine.customer_id,
     );
 
+    // De-blacklisting customer who paid the fines
+    customer.is_blacklisted = false;
+    await this.customerRepository.save(customer);
+
     //Send notif mail
     await this.notificationService.sendPaymentConfirmation(
       customer.email,
@@ -134,9 +140,16 @@ export class FineService {
     if (!fine) {
       throw new NotFoundException('Fine not found');
     }
+    const customer = await this.customerRepository.findOneBy({
+      id: fine.customer_id,
+    });
     fine.overdue_days = updateFineDto.overdue_days;
     fine.overdue_fee = updateFineDto.overdue_days * fine.overdue_rate;
     fine.is_paid = updateFineDto.is_paid;
+    if (fine.is_paid) {
+      customer.is_blacklisted = false;
+      await this.customerRepository.save(customer);
+    }
     return this.fineRepository.save(fine);
   }
 

@@ -7,10 +7,11 @@ import { TransactionsModule } from './transactions.module';
 import { NotificationsModule } from './notifications.module';
 import { CustomerModule } from './customer.module';
 import { BlacklistModule } from './blacklist.module';
+import { Customer } from '../entities/customer.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Fine]),
+    TypeOrmModule.forFeature([Fine, Customer]),
     forwardRef(() => TransactionsModule),
     NotificationsModule,
     forwardRef(() => CustomerModule),
