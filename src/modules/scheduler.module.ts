@@ -5,6 +5,7 @@ import { SchedulerController } from '../controllers/scheduler.controller';
 import { ReservationsModule } from './reservations.module';
 import { TransactionsModule } from './transactions.module';
 import { BlacklistModule } from './blacklist.module';
+import { FineModule } from './fine.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { BlacklistModule } from './blacklist.module';
     forwardRef(() => ReservationsModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => BlacklistModule),
+    forwardRef(() => FineModule),
   ],
   providers: [SchedulerService],
   controllers: [SchedulerController],

@@ -3,6 +3,7 @@ import { ReservationsService } from './reservations.service';
 import { TransactionsService } from './transactions.service';
 import { CronJob } from 'cron';
 import { BlacklistService } from './blacklist.service';
+import { FineService } from './fine.service';
 
 @Injectable()
 export class SchedulerService {
@@ -10,6 +11,7 @@ export class SchedulerService {
   private reservationExpireCronJob: CronJob;
   private transactionCronJob: CronJob;
   private blacklistCronJob: CronJob;
+  private fineCronJob: CronJob;
 
   constructor(
     @Inject(forwardRef(() => ReservationsService))
@@ -18,6 +20,8 @@ export class SchedulerService {
     private readonly transactionService: TransactionsService,
     @Inject(forwardRef(() => BlacklistService))
     private readonly blacklistService: BlacklistService,
+    @Inject(forwardRef(() => FineService))
+    private readonly fineService: FineService,
   ) {
     // EVERY_DAY_AT_7AM
     this.reservationExpireCronJob = new CronJob('0 7 * * *', async () => {
@@ -29,8 +33,14 @@ export class SchedulerService {
       await this.handleTransactionCron();
     });
 
+    // EVERY_HOUR
     this.blacklistCronJob = new CronJob('0 * * * *', async () => {
       await this.handleBlacklistCron();
+    });
+
+    // EVERY_DAY_AT_MIDNIGHT
+    this.fineCronJob = new CronJob('0 0 * * *', async () => {
+      await this.handleFineUpdateCron();
     });
 
     // Starting the cron job automatically from the start
@@ -67,11 +77,22 @@ export class SchedulerService {
     }
   }
 
+  async handleFineUpdateCron() {
+    this.logger.log('Checking and updating Fines...');
+    try {
+      await this.fineService.dailyFineUpdater();
+      this.logger.log('Fines status checked and updated successfully.');
+    } catch (e) {
+      this.logger.log('Something went wrong...', e.stack);
+    }
+  }
+
   stopCronJob() {
     this.logger.log('Stopping the cron job...');
     this.transactionCronJob.stop();
     this.reservationExpireCronJob.stop();
     this.blacklistCronJob.stop();
+    this.fineCronJob.stop();
     this.logger.log('Cron job stopped.');
   }
 
@@ -81,5 +102,6 @@ export class SchedulerService {
     this.transactionCronJob.start();
     this.reservationExpireCronJob.start();
     this.blacklistCronJob.start();
+    this.fineCronJob.start();
   }
 }

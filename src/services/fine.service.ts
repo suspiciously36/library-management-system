@@ -117,6 +117,31 @@ export class FineService {
     return this.fineRepository.save(fine);
   }
 
+  async dailyFineUpdater(): Promise<void> {
+    const unpaidFines = await this.fineRepository.find({
+      where: { is_paid: false },
+      relations: ['customer'],
+    });
+    for (const fine of unpaidFines) {
+      if (fine.overdue_days <= 14) {
+        fine.overdue_days += 1;
+        await this.fineRepository.save(fine);
+        await this.notificationService.sendDailyFineNotification(
+          fine.customer.email,
+          fine.overdue_days,
+        );
+      } else {
+        fine.overdue_days += 1;
+        fine.customer.is_blacklisted = true;
+        await this.fineRepository.save(fine);
+        await this.customerRepository.save(fine.customer);
+        await this.notificationService.sendBlacklistNotification(
+          fine.customer.email,
+        );
+      }
+    }
+  }
+
   // CRUD
 
   async findAllFines(): Promise<{ fines: Fine[]; total: number }> {

@@ -65,6 +65,12 @@ export class NotificationsService {
     await this.mailerService.sendMail({ to, subject, text: content });
   }
 
+  async sendDailyFineNotification(to: string, days: number): Promise<void> {
+    const subject = `Fine Notification`;
+    const content = `You have a fine to pay for overdue of ${days} day(s), please request a payment before 14 days limit.`;
+    await this.mailerService.sendMail({ to, subject, text: content });
+  }
+
   async sendBlacklistNotification(to: string): Promise<void> {
     const subject = `Blacklist Notification`;
     const content = `You have been blacklisted from our library due to not pay overdue fee for over 14 days, please contact support for further information.`;
