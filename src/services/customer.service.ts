@@ -70,18 +70,22 @@ export class CustomerService {
     if (!customer) {
       throw new NotFoundException('Customer not found');
     }
-    const existingCustomer = await this.customerRepository.findOne({
-      where: [
-        { email: updateCustomerDto.email },
-        { phone: updateCustomerDto.phone },
-      ],
-    });
 
-    if (existingCustomer) {
-      throw new ConflictException(
-        'Customer with this email/phone already exists',
-      );
+    if (updateCustomerDto.email && updateCustomerDto.phone) {
+      const existingCustomer = await this.customerRepository.findOne({
+        where: [
+          { email: updateCustomerDto.email },
+          { phone: updateCustomerDto.phone },
+        ],
+      });
+
+      if (existingCustomer) {
+        throw new ConflictException(
+          'Customer with this email/phone already exists',
+        );
+      }
     }
+
     customer.name = updateCustomerDto.name;
     customer.phone = updateCustomerDto.phone;
     customer.address = updateCustomerDto.address;
@@ -89,6 +93,7 @@ export class CustomerService {
     customer.reservation_cooldown_timestamp =
       updateCustomerDto.reservation_cooldown_timestamp;
     customer.reservation_limit = updateCustomerDto.reservation_limit;
+    customer.is_blacklisted = updateCustomerDto.is_blacklisted;
     return this.customerRepository.save(customer);
   }
 
