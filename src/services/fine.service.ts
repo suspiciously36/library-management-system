@@ -123,8 +123,9 @@ export class FineService {
       relations: ['customer'],
     });
     for (const fine of unpaidFines) {
-      if (fine.overdue_days <= 14) {
+      if (fine.overdue_days < 14) {
         fine.overdue_days += 1;
+        fine.overdue_fee = fine.overdue_days * fine.overdue_rate;
         await this.fineRepository.save(fine);
         await this.notificationService.sendDailyFineNotification(
           fine.customer.email,
@@ -132,12 +133,15 @@ export class FineService {
         );
       } else {
         fine.overdue_days += 1;
+        fine.overdue_fee = fine.overdue_days * fine.overdue_rate;
         fine.customer.is_blacklisted = true;
         await this.fineRepository.save(fine);
         await this.customerRepository.save(fine.customer);
-        await this.notificationService.sendBlacklistNotification(
-          fine.customer.email,
-        );
+        if (fine.overdue_days === 15) {
+          await this.notificationService.sendBlacklistNotification(
+            fine.customer.email,
+          );
+        }
       }
     }
   }

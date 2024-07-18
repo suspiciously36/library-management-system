@@ -39,7 +39,7 @@ export class SchedulerService {
     });
 
     // EVERY_DAY_AT_MIDNIGHT
-    this.fineCronJob = new CronJob('0 0 * * *', async () => {
+    this.fineCronJob = new CronJob('* * * * *', async () => {
       await this.handleFineUpdateCron();
     });
 
