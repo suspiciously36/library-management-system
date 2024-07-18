@@ -87,10 +87,11 @@
 
 # /scheduler
 
-    Cron job for reservations and transactions checking (EVERY_DAY_AT_7AM) (Guarded)
+    Cron job for reservations and transactions checking (Guarded)
 
     - Check the transactions table if the book is returned before due_date (overdue), if not, send mail notification to customer with fine information
-    - Check the reservation table if the book is fulfilled (borrowed) before expiration, if not, send mail notification to customer and set the penalty timer for that customer's next book reservation (3 days)
+    - Check the reservations table if the book is fulfilled (borrowed) before expiration, if not, send mail notification to customer and set the penalty timer for that customer's next book reservation (3 days)
+    - Check the fines table if there're any fines that are not paid, if exist, increase overdue_days by 1 every day and send mail notification to customer, if the overdue_days is over 14, set blacklist status for that customer and send blacklisted mail notification
 
       POST: /start - start the cron job
       POST: /stop - stop the cron job
