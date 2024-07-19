@@ -17,6 +17,10 @@ export default class CreateTransaction implements Seeder {
           .map(async (transaction: Transaction) => {
             book.copies_available -= 1;
             await connection.getRepository(Book).save(book);
+            if (transaction.is_returned) {
+              book.copies_available += 1;
+              await connection.getRepository(Book).save(book);
+            }
             return transaction;
           })
           .create();

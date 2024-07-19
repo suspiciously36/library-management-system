@@ -5,6 +5,7 @@ import { Reservation } from '../entities/reservation.entity';
 import { Book } from '../entities/book.entity';
 import { Customer } from '../entities/customer.entity';
 import { Transaction } from '../entities/transaction.entity';
+import { dateTypeTransformer } from '../common/utils/dateTypeChecker.util';
 
 export default class CreateReservation implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
@@ -23,6 +24,15 @@ export default class CreateReservation implements Seeder {
           }
           if (reservation.is_fulfilled) {
             customer.reservation_limit += 1;
+            await connection.getRepository(Transaction).save({
+              book_id: reservation.book_id,
+              customer_id: reservation.customer_id,
+              issued_date: reservation.updated_at,
+              due_date: new Date(
+                dateTypeTransformer(reservation.updated_at).toDate().getTime() +
+                  7 * 24 * 60 * 60 * 1000,
+              ),
+            });
           }
           await connection.getRepository(Customer).save(customer);
           await connection.getRepository(Book).save(book);

@@ -34,11 +34,4 @@ export const fineData = [
     overdue_days: 15,
     overdue_rate: 1000,
   },
-  {
-    customer_id: 3,
-    transaction_id: 8,
-    is_paid: false,
-    overdue_days: 1,
-    overdue_rate: 1000,
-  },
 ];
