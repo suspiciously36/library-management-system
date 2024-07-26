@@ -187,7 +187,7 @@ export class ReservationsService {
 
       //Decreasing customer's reservation_limit
       customer.reservation_limit -= 1;
-      this.customersRepository.save(customer);
+      await this.customersRepository.save(customer);
 
       // Sending mail notif
       await this.notificationService.sendBookReserveNotification(
