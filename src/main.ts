@@ -11,7 +11,11 @@ async function bootstrap() {
 
   //Enabling CORS
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:5173'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://studio.apollographql.com',
+    ],
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

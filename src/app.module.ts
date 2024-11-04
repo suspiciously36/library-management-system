@@ -17,19 +17,28 @@ import { SchedulerModule } from './modules/scheduler.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { BlacklistModule } from './modules/blacklist.module';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphQLModule } from '@nestjs/graphql';
+import { join } from 'path';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
-        type: configService.get<'sqlite'>('database.type'),
+        type: 'postgres',
+        host: configService.get<string>('database.host'),
+        port: configService.get<number>('database.port'),
+        username: configService.get<string>('database.username'),
+        password: configService.get<string>('database.password'),
         database: configService.get<string>('database.database'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         logging: true,
-        synchronize: true,
+        synchronize: true, // Only use true in development
       }),
       inject: [ConfigService],
     }),
+
     CustomerModule,
     BooksModule,
     AuthorsModule,
@@ -44,6 +53,16 @@ import { BlacklistModule } from './modules/blacklist.module';
     SchedulerModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      typePaths: ['./**/*.graphql'],
+      definitions: {
+        path: join(process.cwd(), 'src/graphql.ts'),
+        outputAs: 'class',
+      },
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

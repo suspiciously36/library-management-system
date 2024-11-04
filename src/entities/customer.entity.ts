@@ -27,8 +27,8 @@ export class Customer {
   @Column({ type: 'varchar' })
   address: string;
 
-  @Column({ type: 'int', nullable: true, default: 0 })
-  reservation_cooldown_timestamp: number;
+  @Column({ type: 'varchar', nullable: true, default: 0 })
+  reservation_cooldown_timestamp: string;
 
   @Column({ type: 'int', default: 5, nullable: true })
   reservation_limit: number;

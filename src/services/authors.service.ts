@@ -24,7 +24,18 @@ export class AuthorsService {
     }
     const author: Author = new Author();
     author.name = createAuthorDto.name;
-    return this.authorRepository.save(author);
+    return await this.authorRepository.save(author);
+  }
+
+  async createAuthorGQL(createAuthorDto: CreateAuthorDto): Promise<Author> {
+    try {
+      const newAuthor = this.authorRepository.create(createAuthorDto);
+      return await this.authorRepository.save(newAuthor);
+    } catch (error) {
+      // Handle and log errors if necessary
+      console.error('Error creating author:', error);
+      return null; // or handle error appropriately
+    }
   }
 
   async findAllAuthor(): Promise<{ authors: Author[]; total: number }> {

@@ -64,6 +64,16 @@ export class BooksService {
     return { books, total };
   }
 
+  async findAllBookWithAuthorId(author_id: number): Promise<Book[]> {
+    const books = await this.bookRepository.find({
+      where: { author_id: author_id },
+    });
+    if (!books) {
+      throw new NotFoundException('No Book found.');
+    }
+    return books;
+  }
+
   async findOneBook(id: number) {
     const book = await this.bookRepository.findOneBy({ id });
     if (!book) {
